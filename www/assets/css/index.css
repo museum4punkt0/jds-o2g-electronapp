@@ -1,0 +1,95 @@
+*{
+  margin: 0;
+  padding: 0;
+  margin-bottom: 25px;
+}
+html{
+  font-size: 26px; 
+}
+
+body {
+  background: #fff;
+  color: #333;
+  padding: 1em;
+  font-family: 'IBM Plex Sans Condensed', 'Helvetica Neue', 'Arial';
+  text-align: center;
+  font-weight: 300;
+}
+
+.wrapper{
+  margin: 0 auto;
+  max-width: 1000px;
+}
+
+h1,h2,h3,h4,h5,h6{
+  font-family: 'Questrial';
+}
+
+input {
+  outline: none;
+  width: 50%;
+  max-width: 500px;
+  height: 100%;
+}
+
+input, button{
+  font-size: 0.70rem;
+  font-family: 'IBM Plex Sans Condensed', 'Helvetica Neue', 'Arial';
+  padding: 10px;
+  font-weight: 300;
+}
+details{
+  margin: 0 auto;
+  margin-bottom: 60px;
+}
+#header__station_id{
+  font-family: 'PT Mono', 'monospace';
+  margin: 40px 0;
+}
+.meta {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.info {
+  text-align: center;
+}
+
+#feedback{
+  font-weight: bold;
+}
+#countdown{
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+
+hr{
+  margin: 40px 0;
+}
+
+.logo{
+  max-width: 200px;
+  margin: 0 auto 20px;
+  position: relative;
+}
+
+.btn{
+  padding: 10px 24px;
+  background-color: #000;
+  border: 2px solid #000;
+  color: #fff;
+}
+.btn.muted{
+  background-color: #fff;
+  color: #000;
+}
+.btn.muted:hover{
+  background-color: #fff;
+  color: #593e0b;
+  border: 2px solid #b08e4b;
+}
+.btn:hover{
+  background-color: #b08e4b;
+  border: 2px solid #b08e4b;
+}

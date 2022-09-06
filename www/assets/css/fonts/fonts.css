@@ -1,0 +1,70 @@
+/* questrial-regular - latin */
+@font-face {
+    font-family: 'Questrial';
+    font-style: normal;
+    font-weight: 400;
+    src: url('questrial-v18-latin-regular.eot'); /* IE9 Compat Modes */
+    src: local(''),
+         url('questrial-v18-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('questrial-v18-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+         url('questrial-v18-latin-regular.woff') format('woff'), /* Modern Browsers */
+         url('questrial-v18-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+         url('questrial-v18-latin-regular.svg#Questrial') format('svg'); /* Legacy iOS */
+  }/* ibm-plex-sans-condensed-300 - latin */
+@font-face {
+     font-family: 'IBM Plex Sans Condensed';
+     font-style: normal;
+     font-weight: 300;
+     src: url('ibm-plex-sans-condensed-v13-latin-300.eot'); /* IE9 Compat Modes */
+     src: local(''),
+          url('ibm-plex-sans-condensed-v13-latin-300.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+          url('ibm-plex-sans-condensed-v13-latin-300.woff2') format('woff2'), /* Super Modern Browsers */
+          url('ibm-plex-sans-condensed-v13-latin-300.woff') format('woff'), /* Modern Browsers */
+          url('ibm-plex-sans-condensed-v13-latin-300.ttf') format('truetype'), /* Safari, Android, iOS */
+          url('ibm-plex-sans-condensed-v13-latin-300.svg#IBMPlexSansCondensed') format('svg'); /* Legacy iOS */
+   }
+   
+   /* ibm-plex-sans-condensed-regular - latin */
+   @font-face {
+     font-family: 'IBM Plex Sans Condensed';
+     font-style: normal;
+     font-weight: 400;
+     src: url('ibm-plex-sans-condensed-v13-latin-regular.eot'); /* IE9 Compat Modes */
+     src: local(''),
+          url('ibm-plex-sans-condensed-v13-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+          url('ibm-plex-sans-condensed-v13-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+          url('ibm-plex-sans-condensed-v13-latin-regular.woff') format('woff'), /* Modern Browsers */
+          url('ibm-plex-sans-condensed-v13-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+          url('ibm-plex-sans-condensed-v13-latin-regular.svg#IBMPlexSansCondensed') format('svg'); /* Legacy iOS */
+   }
+   
+   /* ibm-plex-sans-condensed-600 - latin */
+   @font-face {
+     font-family: 'IBM Plex Sans Condensed';
+     font-style: normal;
+     font-weight: 600;
+     src: url('ibm-plex-sans-condensed-v13-latin-600.eot'); /* IE9 Compat Modes */
+     src: local(''),
+          url('ibm-plex-sans-condensed-v13-latin-600.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+          url('ibm-plex-sans-condensed-v13-latin-600.woff2') format('woff2'), /* Super Modern Browsers */
+          url('ibm-plex-sans-condensed-v13-latin-600.woff') format('woff'), /* Modern Browsers */
+          url('ibm-plex-sans-condensed-v13-latin-600.ttf') format('truetype'), /* Safari, Android, iOS */
+          url('ibm-plex-sans-condensed-v13-latin-600.svg#IBMPlexSansCondensed') format('svg'); /* Legacy iOS */
+   }
+   
+
+  /* pt-mono-regular - latin */
+@font-face {
+     font-family: 'PT Mono';
+     font-style: normal;
+     font-weight: 400;
+     src: url('pt-mono-v13-latin-regular.eot'); /* IE9 Compat Modes */
+     src: local(''),
+          url('pt-mono-v13-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+          url('pt-mono-v13-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+          url('pt-mono-v13-latin-regular.woff') format('woff'), /* Modern Browsers */
+          url('pt-mono-v13-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+          url('pt-mono-v13-latin-regular.svg#PTMono') format('svg'); /* Legacy iOS */
+   }
+   
+    

@@ -1,0 +1,61 @@
+{
+  "name": "electron-jds-obj2gltf",
+  "version": "0.0.1",
+  "description": "Converter obj2gltf for 3D models including draco compression",
+  "main": "main.js",
+  "author": "2av",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.64",
+    "@electron-forge/maker-deb": "^6.0.0-beta.64",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.64",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.64",
+    "@electron-forge/maker-zip": "^6.0.0-beta.64",
+    "electron": "^19.0.9"
+  },
+  "dependencies": {
+    "electron-reload": "^2.0.0-alpha.1",
+    "electron-squirrel-startup": "^1.0.0"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "testelectron"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  },
+  "private": true,
+  "homepage": "https://gitlab.com/squareclouds/scd-jds-obj2gltf#readme",
+  "bugs": {
+    "url": "https://gitlab.com/squareclouds/scd-jds-obj2gltf/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+git@gitlab.com:squareclouds/scd-jds-obj2gltf.git"
+  }
+}
