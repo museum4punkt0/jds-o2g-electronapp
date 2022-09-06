@@ -6,44 +6,18 @@
   <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
   <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
   <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
-  <title>SquareSign</title>
+  <title>obj2gltf</title>
   <link rel="stylesheet" type="text/css" href="./assets/css/fonts/fonts.css">
   <link rel="stylesheet" type="text/css" href="./assets/css/index.css">
 </head>
 
 <body>
   <div class="wrapper">
-    <img src="./assets/images/scd-logo2022-hor.svg" class="logo" alt="">
-    <h2>Current server URL:</h2>
-    <p class="" id="server"></p>  
-    <input type="text" id="input__server" data-target="save"></input>
-    <button id="save" class="btn">Save Server</button>
-
-    <hr>
-    <div class="info">
-      <p>
-        Station ID:
-      </p>
-      <h2 id="header__station_id"></h2>
-      <p id="message">
-        The station will start in
-      </p>
-      <p id="countdown"></p>
-      <details class="meta">
-        <summary>Advanced settings</summary>
-        <h3>PLEASE ONLY CHANGE THIS</h3>
-        <p>if you are sure that you have no access to your server's backend to enter the generated ID and you already
-          prepared your server in advance with a personalised ID for this station.</p>
-        <input type="text" id="input__id" data-target="saveID"></input>
-        <button id="saveID" class="btn">Save ID</button>
-        <button id="generateID" class="btn muted">Generate new ID</button><br>
-        <hr>
-        <button id="stopTimer" class="btn muted">Stop timer</button>
-        <button id="load" class="btn muted">Load now</button>
-      </details>
-
-
-    </div>
+    
+    <h2>Choose an object:</h2>
+    <p class="" id="obj-dir"></p>  
+    <input type="file" id="objfile" name="objfile" data-target="load">
+    <button id="convert" class="btn">Convert OBJ</button>
     <p id="feedback"></p>
     <script src="./assets/js/app.js"></script>
   </div>

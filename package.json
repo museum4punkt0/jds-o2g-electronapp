@@ -20,7 +20,11 @@
   },
   "dependencies": {
     "electron-reload": "^2.0.0-alpha.1",
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "fs": "^0.0.1-security",
+    "fs-extra": "^10.1.0",
+    "gltf-pipeline": "^3.0.5",
+    "obj2gltf": "^3.1.4"
   },
   "config": {
     "forge": {
