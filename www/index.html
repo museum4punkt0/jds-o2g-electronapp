@@ -13,12 +13,21 @@
 
 <body>
   <div class="wrapper">
-    
-    <h2>Choose an object:</h2>
-    <p class="" id="obj-dir"></p>  
-    <input type="file" id="objfile" name="objfile" data-target="load">
-    <button id="convert" class="btn">Convert OBJ</button>
-    <p id="feedback"></p>
+    <div id="viewers" class="viewers">
+
+    </div>
+    <div class="tools">
+      <h3>Choose an object:</h3>
+      <form id="form-obj">
+        <input type="file" id="objfile" name="objfile" data-target="load">
+      </form>
+      <button id="convert" class="btn">Convert OBJ to GLTF</button>
+      <button id="compress" class="btn hidden">Compress to Draco GLTF</button>
+      <button id="reset" class="btn hidden">Reset</button>      
+    </div>
+
+    <p id="feedback">asdasd</p>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <script src="./assets/js/app.js"></script>
   </div>
 </body>

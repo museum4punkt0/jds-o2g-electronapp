@@ -1,24 +1,20 @@
 *{
   margin: 0;
   padding: 0;
-  margin-bottom: 25px;
 }
 html{
-  font-size: 26px; 
+  font-size: 18px; 
 }
 
 body {
   background: #fff;
   color: #333;
-  padding: 1em;
   font-family: 'IBM Plex Sans Condensed', 'Helvetica Neue', 'Arial';
-  text-align: center;
   font-weight: 300;
 }
 
 .wrapper{
   margin: 0 auto;
-  max-width: 1000px;
 }
 
 h1,h2,h3,h4,h5,h6{
@@ -57,25 +53,27 @@ details{
 
 #feedback{
   font-weight: bold;
-}
-#countdown{
-  font-size: 1.5rem;
-  font-weight: 600;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  border: 1px solid #777;
+  background-color: #fff;
+  padding: 0.5rem;
+  pointer-events: none;
+  transition: opacity 0.5s; 
+  -webkit-transition: opacity 0.5s; 
+  opacity: 0;
+  z-index: 9999;
 }
 
-
-hr{
-  margin: 40px 0;
+.show{
+  opacity: 1 !important;
 }
 
-.logo{
-  max-width: 200px;
-  margin: 0 auto 20px;
-  position: relative;
-}
 
 .btn{
-  padding: 10px 24px;
+  padding: 8px 18px;
   background-color: #000;
   border: 2px solid #000;
   color: #fff;
@@ -83,6 +81,10 @@ hr{
 .btn.muted{
   background-color: #fff;
   color: #000;
+}
+.btn.disabled{
+  pointer-events: none;
+  background-color: #777;
 }
 .btn.muted:hover{
   background-color: #fff;
@@ -92,4 +94,40 @@ hr{
 .btn:hover{
   background-color: #b08e4b;
   border: 2px solid #b08e4b;
+}
+
+.tools{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: calc(100% - 1.6rem);
+  padding:0.8rem;
+  background-color: rgba(160,160,160,.35);
+  z-index: 9999;
+}
+
+.viewers{
+  width: calc(100% - 1rem);
+  padding: 0.5rem;
+}
+
+.model-viewer{
+  min-height: 500px;
+  height: 100vh;
+  width: 100%;  
+}
+
+.model{
+  border-bottom: 1px dashed #eee;
+  margin: 1rem 0;
+  text-align: right;
+}
+
+.closer{
+  border-bottom: 2px solid #eee;
+  margin-bottom: 2rem;
+}
+
+.hidden{
+  display: none;
 }
