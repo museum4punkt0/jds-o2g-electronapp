@@ -4,13 +4,13 @@
 }
 html{
   font-size: 18px; 
+  letter-spacing: 0.05rem;
 }
 
 body {
   background: #fff;
-  color: #333;
-  font-family: 'IBM Plex Sans Condensed', 'Helvetica Neue', 'Arial';
-  font-weight: 300;
+  color: #283583;
+  font-family: 'WeissenhofGrotesk-Regular', 'Helvetica Neue', 'Arial';
 }
 
 .wrapper{
@@ -18,7 +18,9 @@ body {
 }
 
 h1,h2,h3,h4,h5,h6{
-  font-family: 'Questrial';
+  font-family: 'WeissenhofGrotesk-Medium';
+  letter-spacing: 0.065rem;
+  margin-bottom: 1rem;
 }
 
 input {
@@ -29,11 +31,12 @@ input {
 }
 
 input, button{
-  font-size: 0.70rem;
-  font-family: 'IBM Plex Sans Condensed', 'Helvetica Neue', 'Arial';
-  padding: 10px;
-  font-weight: 300;
+  font-size: 0.76rem;
+  font-family: 'WeissenhofGrotesk-Regular', 'Helvetica Neue', 'Arial';
+  letter-spacing: 0.04rem;
+  margin-bottom: 0.8rem;
 }
+
 details{
   margin: 0 auto;
   margin-bottom: 60px;
@@ -51,13 +54,20 @@ details{
   text-align: center;
 }
 
+.logo{
+  position: absolute;
+  max-width: 120px;
+  top: 1rem;
+  right: 1rem;
+}
+
 #feedback{
   font-weight: bold;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  border: 1px solid #777;
+  border: 1px solid #283583;
   background-color: #fff;
   padding: 0.5rem;
   pointer-events: none;
@@ -74,8 +84,8 @@ details{
 
 .btn{
   padding: 8px 18px;
-  background-color: #000;
-  border: 2px solid #000;
+  background-color: #283583;
+  border: 2px solid #283583;
   color: #fff;
 }
 .btn.muted{
@@ -84,7 +94,8 @@ details{
 }
 .btn.disabled{
   pointer-events: none;
-  background-color: #777;
+  background-color: #AAB5F8;
+  color: #283583;
 }
 .btn.muted:hover{
   background-color: #fff;
@@ -92,8 +103,9 @@ details{
   border: 2px solid #b08e4b;
 }
 .btn:hover{
-  background-color: #b08e4b;
-  border: 2px solid #b08e4b;
+  background-color: #fff;
+  border: 2px solid #283583;
+  color: #283583;
 }
 
 .tools{
@@ -101,19 +113,21 @@ details{
   bottom: 0;
   left: 0;
   width: calc(100% - 1.6rem);
-  padding:0.8rem;
-  background-color: rgba(160,160,160,.35);
+  padding:0.8rem 0.8rem 0;
+  background-color: rgba(90,113,255,1);
   z-index: 9999;
+  color: #fff;
 }
 
 .viewers{
   width: calc(100% - 1rem);
   padding: 0.5rem;
+  height: 80%;
 }
 
 .model-viewer{
   min-height: 500px;
-  height: 65vh;
+  height: 50vh;
   width: 100%;  
 }
 
