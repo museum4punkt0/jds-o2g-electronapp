@@ -1,11 +1,11 @@
 
 const { ipcRenderer } = require("electron");
 
-let timeoutfeedback;
+const NO_FILES_SELECTED = "Keine Datei vorhanden!";
 
+let timeoutfeedback;
 var btn_convert;
 var btn_reset;
-
 let regularGltfPath;
 let filename;
 
@@ -15,12 +15,13 @@ function initialize() {
 
   btn_convert.addEventListener('click', () => {
     let file_field = document.getElementById("objfile");
-    btn_convert.classList.add('disabled');
+
     if (file_field.files.length == 0) {
-      setFeedback("No files selected");
+      setFeedback(NO_FILES_SELECTED);
       return;
     }
 
+    btn_convert.classList.add('disabled');
     filename = removeExtension(file_field.files[0].name);
 
     let Data = {
@@ -54,7 +55,10 @@ function initialize() {
 
     let viewerDiv = document.createElement("div");
     viewerDiv.classList.add('model');
-    viewerDiv.innerHTML = '<h2>' + args['label'] + '</h2><p>' + args['name'] + '</p><model-viewer id="' + model_id + '" class="model-viewer" src="' + args['path'] + '" id="reveal" loading="eager" camera-controls touch-action="pan-y" auto-rotate shadow-intensity="1" alt="loaded model"></model-viewer>';
+    viewerDiv.innerHTML = '<h2>' + args['label'] + '</h2><p>' + args['name'] + '</p>' +
+      '<p>' + args['filesize'] + '</p>' +
+      '<model-viewer id="' + model_id + '" class="model-viewer" src="' + args['path'] + '" id="reveal" loading="eager" camera-controls touch-action="pan-y" auto-rotate shadow-intensity="1" alt="loaded model"></model-viewer>';
+
 
     document.getElementById('viewers').appendChild(viewerDiv);
     regularGltfPath = args['path'];
@@ -64,30 +68,32 @@ function initialize() {
       btn_convert.classList.remove('disabled');
     }
     else {
-      const modelViewer = document.getElementById(model_id);
+      viewerDiv.innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer canvas" src="' + args['path'] + '" id="reveal" loading="eager" camera-controls touch-action="pan-y" auto-rotate shadow-intensity="1" alt="loaded model"></model-viewer>';
+      const modelViewer = document.getElementById('hidden_' + model_id);
 
       modelViewer.addEventListener('load', function () {
         let data = modelViewer.toBlob({
           idealAspect: true
         }).then(function (imgdata) {
           saveBlob(imgdata, args['name']);
+          var element = document.getElementById('hidden_' + model_id);
+          element.parentNode.removeChild(element);
         });
       });
     }
   });
 }
 
-
 function saveBlob(blob, fileName) {
-  let reader = new FileReader()
+  let reader = new FileReader();
   reader.onload = function () {
     if (reader.readyState == 2) {
-      var buffer = Buffer.from(reader.result)
-      ipcRenderer.send('request-previewimg', fileName, buffer)
-      console.log(`Saving ${JSON.stringify({ fileName, size: blob.size })}`)
+      var buffer = Buffer.from(reader.result);
+      ipcRenderer.send('request-previewimg', fileName, buffer);
+      console.log(`Saving ${JSON.stringify({ fileName, size: blob.size })}`);
     }
   }
-  reader.readAsArrayBuffer(blob)
+  reader.readAsArrayBuffer(blob);
 }
 
 function removeExtension(filename) {

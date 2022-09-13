@@ -127,7 +127,7 @@ details{
 
 .model-viewer{
   min-height: 500px;
-  height: 50vh;
+  height: 70vh;
   width: 100%;  
 }
 
@@ -144,4 +144,12 @@ details{
 
 .hidden{
   display: none;
+}
+
+.canvas{
+  width: 3000px;
+  height: 3000px;
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
 }
