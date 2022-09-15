@@ -50,6 +50,7 @@ function convertToGltf(args, page) {
         writeFileSyncRecursive(savepath + "/" + filenamegltf + "/" + filenamegltf + "-regular.gltf", data);        
 
         let Data = {
+            type: GLTF_SAVED,
             label: "Regular GLTF",
             name: filenamegltf,
             filesize: datasize,
@@ -59,7 +60,7 @@ function convertToGltf(args, page) {
 
         page.send(GLTF_SAVED, Data);
         page.send(MSG, MSG_GLTF_SAVED);
-        compressWithDraco(filenamegltf, page);
+        //compressWithDraco(filenamegltf, page);
     });
 }
 
@@ -78,6 +79,7 @@ function compressWithDraco(filename, page) {
         fsExtra.writeJsonSync(savepath + "/" + filename + "/" + filename + "-draco_compressed.gltf", results.gltf);        
 
         let Data = {
+            type: DRACO_SAVED,
             label: "Draco compressed GLTF",
             name: filename,
             filesize: datasize,
