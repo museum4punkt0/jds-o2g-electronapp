@@ -17,8 +17,8 @@ const fs = require("fs");
 
 function createWindow() {
     const win = new BrowserWindow({
-        width: 1900,
-        height: 1300,
+        width: 1200,
+        height: 800,
         autoHideMenuBar: true,
         center: true,
         webPreferences: {
