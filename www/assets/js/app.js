@@ -18,6 +18,7 @@ var btn_convert;
 var btn_reset;
 let regularGltfPath;
 let filename;
+let obj_counter = 1;
 
 function initialize() {
   btn_convert = document.getElementById('convert');
@@ -32,6 +33,7 @@ function initialize() {
     }
 
     btn_convert.classList.add('disabled');
+    btn_reset.classList.add('disabled');
     filename = removeExtension(file_field.files[0].name);
 
     let Data = {
@@ -44,6 +46,8 @@ function initialize() {
 
   btn_reset.addEventListener('click', () => {
     document.getElementById('viewers').innerHTML = "";
+
+    obj_counter = 1;
 
     let form = document.getElementById('form-obj');
     form.reset();
@@ -61,56 +65,85 @@ function initialize() {
 }
 
 function createViewer(event, args) {
+  let _type = args['type'] ?? '';
   btn_reset.classList.remove('hidden');
 
-  let model_id = Date.now();
+  let model_id = Date.now() + Math.random();
 
-  let viewerDiv = document.createElement("div");
-  viewerDiv.classList.add('model');
-  document.getElementById('viewers').appendChild(viewerDiv);
+  if (_type == GLTF_SAVED || _type == DRACO_SAVED) {
 
-  if (args['type'] == GLTF_SAVED || args['type'] == DRACO_SAVED) {
-    viewerDiv.innerHTML = '<h2>' + args['label'] + '</h2><p>' + args['name'] + '</p>' +
-      '<p>' + args['filesize'] + '</p>' +
-      '<model-viewer id="' + model_id + '" class="model-viewer" src="' + args['path'] + '" id="reveal" loading="eager" camera-controls touch-action="pan-y" auto-rotate shadow-intensity="1" alt="loaded model"></model-viewer>';
+    let viewerDiv = document.createElement("div");
+    viewerDiv.classList.add('model');
+    document.getElementById('viewers').prepend(viewerDiv);
 
-    if (args['closer']) {
-      viewerDiv.classList.add('closer');
-      btn_convert.classList.remove('disabled');
+    viewerDiv.innerHTML = '<div class="info"><p class="num">'+obj_counter+'</p><h2>' + args['label'] + '</h2><p>' + args['name'] + '</p>' +
+      '<p>' + args['filesize'] + '</p></div>' +
+      '<model-viewer id="' + model_id + '" class="model-viewer" src="' + args['path'] + '" poster="" id="reveal" loading="eager" reveal="auto" camera-controls touch-action="pan-y" auto-rotate shadow-intensity="1" alt="loaded model"></model-viewer>';
+
+    if (args['type'] == DRACO_SAVED) {
+      obj_counter ++;
+      viewerDiv.classList.add('closer');      
+
+      setTimeout(() => {
+        let Data = {
+          type: '',
+        };
+        createViewer(null, '');
+      }, 1500);
     }
-    else {
-      regularGltfPath = args['path']; 
-
-      viewerDiv.innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer canvas" src="' + args['path'] + '" id="reveal" loading="eager" touch-action="pan-y" shadow-intensity="1" alt="loaded model"></model-viewer>';
-      const modelViewer = document.getElementById('hidden_' + model_id);
+    else {      
+      regularGltfPath = args['path'];
+      //viewerDiv.innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer canvas" poster="" src="' + regularGltfPath + '" id="reveal" reveal="auto" loading="eager" touch-action="pan-y" shadow-intensity="1" alt="loaded model"></model-viewer>';
+      /* document.getElementById('viewers').innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer canvas" poster="" src="' + regularGltfPath + '" id="reveal" reveal="auto" loading="eager" touch-action="pan-y" shadow-intensity="1" alt="loaded model"></model-viewer>';
+      let modelViewer = document.getElementById('hidden_' + model_id);
 
       modelViewer.addEventListener('load', function () {
+        console.log("hidden loaded");
         let data = modelViewer.toBlob({
           idealAspect: true
         }).then(function (imgdata) {
           setTimeout(() => {
-            saveBlob(imgdata, args['name']); 
-          }, 1);
-
-          var element = document.getElementById('hidden_' + model_id);
-          element.parentNode.removeChild(element);
-
+            saveBlob(imgdata, filename, model_id);
+          }, 1500);
         });
-      });
+      }); */
     }
+  }
+  else {
+    document.getElementById('viewers').innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer canvas" poster="" src="' + regularGltfPath + '" id="reveal" reveal="auto" loading="eager" touch-action="pan-y" shadow-intensity="1" alt="loaded model"></model-viewer>';
+    let modelViewer = document.getElementById('hidden_' + model_id);
+
+    modelViewer.addEventListener('load', function () {
+      console.log("hidden loaded");
+      let data = modelViewer.toBlob({
+        idealAspect: true
+      }).then(function (imgdata) {
+        setTimeout(() => {
+          saveBlob(imgdata, filename, model_id);
+        }, 1500);
+      });
+    });
   }
 }
 
-function saveBlob(blob, fileName) {
+function saveBlob(blob, fileName, model_id) {
   let reader = new FileReader();
   reader.onload = function () {
     if (reader.readyState == 2) {
       var buffer = Buffer.from(reader.result);
       ipcRenderer.send(SAVE_IMG, fileName, buffer);
-      ipcRenderer.send(SAVE_DRACO, filename);
+      /*       setTimeout(() => {
+              ipcRenderer.send(SAVE_DRACO, filename);
+            }, 1500); */
     }
   }
   reader.readAsArrayBuffer(blob);
+
+  var element = document.getElementById('hidden_' + model_id);
+  element.parentNode.removeChild(element);
+
+  btn_reset.classList.remove('disabled');
+  btn_convert.classList.remove('disabled');
 }
 
 function removeExtension(filename) {
