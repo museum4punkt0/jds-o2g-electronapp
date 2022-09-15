@@ -3,10 +3,21 @@ const path = require('path')
 const savepath = require('path').join(require('os').homedir(), 'Desktop')
 require('electron-reload')(__dirname);
 
+/* Events */
+const SAVE_GLTF = "save-gltf";
+const SAVE_DRACO = "save-draco";
+const SAVE_IMG = "save-img";
+
+const GLTF_SAVED = 'gltf-saved';
+const DRACO_SAVED = 'draco-saved';
+const IMG_SAVED = 'img-saved';
+
+const MSG = 'new-msg'
+
 /* MSGS */
-const GLTF_SAVED = "GLTF fertig"
-const GLTF_DRACO_SAVED = "GLTF Draco fertig";
-const IMG_SAVED = 'Vorschaubild fertig';
+const MSG_GLTF_SAVED = "GLTF fertig"
+const MSG_GLTF_DRACO_SAVED = "GLTF Draco fertig";
+const MSG_IMG_SAVED = 'Vorschaubild fertig';
 
 /* 3d compression */
 const gltfPipeline = require("gltf-pipeline");
@@ -36,8 +47,7 @@ function convertToGltf(args, page) {
         const data = Buffer.from(JSON.stringify(gltf));
         let datasize = getDatasize(data);
         var filenamegltf = args['filename'];
-        writeFileSyncRecursive(savepath + "/" + filenamegltf + "/" + filenamegltf + "-regular.gltf", data);
-        page.send('mainprocess-response', GLTF_SAVED);
+        writeFileSyncRecursive(savepath + "/" + filenamegltf + "/" + filenamegltf + "-regular.gltf", data);        
 
         let Data = {
             label: "Regular GLTF",
@@ -47,8 +57,8 @@ function convertToGltf(args, page) {
             closer: false
         };
 
-        page.send('mainprocess-objpath', Data);
-
+        page.send(GLTF_SAVED, Data);
+        page.send(MSG, MSG_GLTF_SAVED);
         compressWithDraco(filenamegltf, page);
     });
 }
@@ -65,8 +75,7 @@ function compressWithDraco(filename, page) {
 
     processGltf(gltf, options).then(function (results) {
         const datasize = getDatasize(JSON.stringify(results.gltf));
-        fsExtra.writeJsonSync(savepath + "/" + filename + "/" + filename + "-draco_compressed.gltf", results.gltf);
-        page.send('mainprocess-response', GLTF_DRACO_SAVED);
+        fsExtra.writeJsonSync(savepath + "/" + filename + "/" + filename + "-draco_compressed.gltf", results.gltf);        
 
         let Data = {
             label: "Draco compressed GLTF",
@@ -75,7 +84,9 @@ function compressWithDraco(filename, page) {
             path: savepath + "/" + filename + "/" + filename + "-draco_compressed.gltf",
             closer: true
         };
-        page.send('mainprocess-objpath', Data);
+        
+        page.send(DRACO_SAVED, Data);
+        page.send(MSG, MSG_GLTF_DRACO_SAVED);
     });
 }
 
@@ -100,7 +111,7 @@ app.on('window-all-closed', function () {
 })
 
 
-ipcMain.on('request-gltf', (event, arg) => {
+ipcMain.on(SAVE_GLTF, (event, arg) => {
     console.log(
         arg
     );
@@ -108,19 +119,19 @@ ipcMain.on('request-gltf', (event, arg) => {
 });
 
 
-ipcMain.on('request-gltf-draco', (event, arg) => {
+ipcMain.on(SAVE_DRACO, (event, arg) => {
     console.log(
         arg
     );
     compressWithDraco(arg, event.sender);
 });
 
-ipcMain.on('request-previewimg', (event, name, buffer) => {
+ipcMain.on(SAVE_IMG, (event, name, buffer) => {
     fsExtra.outputFile(savepath + "/" + name + '/' + name + '-preview.png', buffer, err => {
         if (err) {
             event.sender.send('ERROR_FILE', err.message)
         } else {
-            event.sender.send('request-previewimg-saved', IMG_SAVED)
+            event.sender.send(MSG, MSG_IMG_SAVED)
         }
     })
 });
