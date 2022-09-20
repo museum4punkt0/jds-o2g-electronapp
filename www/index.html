@@ -6,26 +6,43 @@
   <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
   <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
   <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
-  <title>obj2gltf</title>
+  <title>O2G - OBJ2GLTF</title>
   <link rel="stylesheet" type="text/css" href="./assets/css/fonts.css">
   <link rel="stylesheet" type="text/css" href="./assets/css/index.css">
 </head>
 
 <body>
   <div class="wrapper">
-    
-    <div id="viewers" class="viewers">
 
-    </div>
-    <div class="tools">
+    <div id="viewers" class="viewers"></div>
+    <div id="previewers" class="viewers hidden"></div>
+
+    <div class="tools convert">
       <img src="assets/images/jds-logo-white.svg" alt="" class="logo">
       <h3>Bitte OBJ Datei auswählen:</h3>
       <form id="form-obj">
-        <input type="file" id="objfile" name="objfile" data-target="load">
+        <input type="file" id="objfile" name="objfile" data-target="load" accept=".obj">
+        <label class="btn" for="objfile">OBJ Datei auswählen</label>
       </form>
       <button id="convert" class="btn">OBJ zu GLTF</button>
-      <button id="reset" class="btn hidden">Reset</button>      
+      <button id="reset" class="btn hidden">Reset</button>
     </div>
+
+    <div class="tools view hidden">
+      <img src="assets/images/jds-logo-white.svg" alt="" class="logo">
+      <h3>Previews</h3>
+      <div id="dropzone" ondrop="dropHandler(event);" ondragleave="dragOutHandler(event);" ondragover="dragOverHandler(event);">Dateien hier droppen</div>
+      <button id="resetprevs" class="btn hidden">Reset</button>
+    </div>
+
+    <nav>
+      <div id="toConvert" class="btn action-selector hidden">
+        Konvertieren
+      </div>
+      <div id="toView" class="btn action-selector">
+        Anschauen
+      </div>
+    </nav>
 
     <p id="feedback"></p>
     <script type="module" src="./assets/js/model-viewer.min.js"></script>

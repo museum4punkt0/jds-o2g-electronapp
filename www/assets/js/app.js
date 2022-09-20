@@ -13,16 +13,48 @@ const IMG_SAVED = 'img-saved';
 
 const MSG = 'new-msg'
 
+const SHADOW_INTENSITY = 0.5;
+
 let timeoutfeedback;
 var btn_convert;
 var btn_reset;
+var btn_resetprevs;
+var btn_toConvert;
+var btn_toView;
+var toolsC;
+var toolsV;
+var viewersArea;
+var previewersArea;
+var dropzone;
 let regularGltfPath;
 let filename;
 let obj_counter = 1;
 
 function initialize() {
+  fileUploadStyling();
+
+  btn_toConvert = document.getElementById('toConvert');
+  btn_toView = document.getElementById('toView');
+
   btn_convert = document.getElementById('convert');
   btn_reset = document.getElementById('reset');
+  btn_resetprevs = document.getElementById('resetprevs');
+
+  toolsC = document.querySelector('.tools.convert');
+  toolsV = document.querySelector('.tools.view');
+
+  viewersArea = document.getElementById('viewers');
+  previewersArea = document.getElementById('previewers');
+
+  dropzone = document.getElementById('dropzone');
+
+  btn_toConvert.addEventListener('click', () => {
+    switchToConvert();
+  });
+
+  btn_toView.addEventListener('click', () => {
+    switchToView();
+  });
 
   btn_convert.addEventListener('click', () => {
     let file_field = document.getElementById("objfile");
@@ -51,6 +83,14 @@ function initialize() {
 
     let form = document.getElementById('form-obj');
     form.reset();
+    var input = document.getElementById('objfile');
+    var label = input.nextElementSibling;
+    label.innerHTML = 'OBJ Datei auswählen';
+  });
+
+  btn_resetprevs.addEventListener('click', () => {
+    document.getElementById('previewers').innerHTML = "";
+    btn_resetprevs.classList.add('hidden');
   });
 
   ipcRenderer.on(MSG, (event, arg) => {
@@ -64,6 +104,98 @@ function initialize() {
   });
 }
 
+function switchToConvert() {
+  console.log("to convert");
+  btn_toView.classList.remove('hidden');
+  btn_toConvert.classList.add('hidden');
+
+  toolsC.classList.remove('hidden')
+  toolsV.classList.add('hidden');
+
+  viewersArea.classList.remove('hidden')
+  previewersArea.classList.add('hidden');
+}
+
+function switchToView() {
+  console.log("to view");
+  btn_toConvert.classList.remove('hidden');
+  btn_toView.classList.add('hidden');
+
+  toolsV.classList.remove('hidden')
+  toolsC.classList.add('hidden');
+
+  previewersArea.classList.remove('hidden')
+  viewersArea.classList.add('hidden');
+}
+
+function dropHandler(ev) {
+  // Prevent default behavior (Prevent file from being opened)
+  ev.preventDefault();
+
+  if (ev.dataTransfer.items) {
+    // Use DataTransferItemList interface to access the file(s)
+    [...ev.dataTransfer.items].forEach((item, i) => {
+      // If dropped items aren't files, reject them
+      if (item.kind === 'file') {
+        const file = item.getAsFile();
+        var _name = file.name;
+        if (_name.includes('.gltf')) {
+          createPreviewer(file.path, file.name, file.size / 1000000);
+        }
+        else {
+          setFeedback("Nur GLTF ist erlaubt! <br>" + file.name);
+        }
+      }
+    });
+  } else {
+    // Use DataTransfer interface to access the file(s)
+    [...ev.dataTransfer.files].forEach((file, i) => {
+      var _name = file.name;
+      if (_name.includes('.gltf')) {
+        createPreviewer(file.path, file.name, file.size / 1000000);
+      }
+      else {
+        setFeedback("Nur GLTF ist erlaubt! <br>" + file.name);
+      }
+
+    });
+  }
+
+  dropzone.classList.remove('hover');
+}
+
+function dragOverHandler(ev) {
+  ev.preventDefault();
+  dropzone.classList.add('hover');
+}
+function dragOutHandler(ev) {
+  ev.preventDefault();
+  dropzone.classList.remove('hover');
+}
+
+function createPreviewer(path, name, filesize) {
+  btn_resetprevs.classList.remove('hidden');
+
+  filesize = filesize.toFixed(2) + "MB";
+  let model_id = Date.now() + Math.random();
+  let previewerDiv = document.createElement("div");
+  previewerDiv.classList.add('model');
+  document.getElementById('previewers').prepend(previewerDiv);
+
+  let bods = document.body;
+  bods.classList.add('reset');
+  previewerDiv.innerHTML = '<div class="info"><h2>' + name + '</h2>' +
+    '<p>' + filesize + '</p></div>' +
+    '<model-viewer id="' + model_id + '" class="model-viewer" poster="" src="' + path + '" loading="eager" reveal="auto" camera-controls touch-action="pan-y" auto-rotate shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
+
+  let modelViewer = document.getElementById(model_id);
+  modelViewer.addEventListener('load', function () {
+    bods.classList.remove('reset');
+  });
+}
+
+
+
 function createViewer(event, args) {
   let _type = args['type'] ?? '';
   btn_reset.classList.remove('hidden');
@@ -76,41 +208,27 @@ function createViewer(event, args) {
     viewerDiv.classList.add('model');
     document.getElementById('viewers').prepend(viewerDiv);
 
-    viewerDiv.innerHTML = '<div class="info"><p class="num">'+obj_counter+'</p><h2>' + args['label'] + '</h2><p>' + args['name'] + '</p>' +
+    viewerDiv.innerHTML = '<div class="info"><p class="num">' + obj_counter + '</p><h2>' + args['label'] + '</h2><p>' + args['name'] + '</p>' +
       '<p>' + args['filesize'] + '</p></div>' +
-      '<model-viewer id="' + model_id + '" class="model-viewer" src="' + args['path'] + '" poster="" id="reveal" loading="eager" reveal="auto" camera-controls touch-action="pan-y" auto-rotate shadow-intensity="1" alt="loaded model"></model-viewer>';
+      '<model-viewer id="' + model_id + '" class="model-viewer" src="' + args['path'] + '" poster="" id="reveal" loading="eager" reveal="auto" camera-controls touch-action="pan-y" auto-rotate shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
 
     if (args['type'] == DRACO_SAVED) {
-      obj_counter ++;
-      viewerDiv.classList.add('closer');      
+      obj_counter++;
+      viewerDiv.classList.add('closer');
 
       setTimeout(() => {
         let Data = {
           type: '',
         };
         createViewer(null, '');
-      }, 1500);
+      }, 100);
     }
-    else {      
+    else {
       regularGltfPath = args['path'];
-      //viewerDiv.innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer canvas" poster="" src="' + regularGltfPath + '" id="reveal" reveal="auto" loading="eager" touch-action="pan-y" shadow-intensity="1" alt="loaded model"></model-viewer>';
-      /* document.getElementById('viewers').innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer canvas" poster="" src="' + regularGltfPath + '" id="reveal" reveal="auto" loading="eager" touch-action="pan-y" shadow-intensity="1" alt="loaded model"></model-viewer>';
-      let modelViewer = document.getElementById('hidden_' + model_id);
-
-      modelViewer.addEventListener('load', function () {
-        console.log("hidden loaded");
-        let data = modelViewer.toBlob({
-          idealAspect: true
-        }).then(function (imgdata) {
-          setTimeout(() => {
-            saveBlob(imgdata, filename, model_id);
-          }, 1500);
-        });
-      }); */
     }
   }
   else {
-    document.getElementById('viewers').innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer canvas" poster="" src="' + regularGltfPath + '" id="reveal" reveal="auto" loading="eager" touch-action="pan-y" shadow-intensity="1" alt="loaded model"></model-viewer>';
+    document.getElementById('viewers').innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer snapshot" poster="" src="' + regularGltfPath + '" id="reveal" reveal="auto" loading="eager" touch-action="pan-y" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
     let modelViewer = document.getElementById('hidden_' + model_id);
 
     modelViewer.addEventListener('load', function () {
@@ -120,7 +238,7 @@ function createViewer(event, args) {
       }).then(function (imgdata) {
         setTimeout(() => {
           saveBlob(imgdata, filename, model_id);
-        }, 1500);
+        }, 100);
       });
     });
   }
@@ -132,9 +250,6 @@ function saveBlob(blob, fileName, model_id) {
     if (reader.readyState == 2) {
       var buffer = Buffer.from(reader.result);
       ipcRenderer.send(SAVE_IMG, fileName, buffer);
-      /*       setTimeout(() => {
-              ipcRenderer.send(SAVE_DRACO, filename);
-            }, 1500); */
     }
   }
   reader.readAsArrayBuffer(blob);
@@ -144,6 +259,17 @@ function saveBlob(blob, fileName, model_id) {
 
   btn_reset.classList.remove('disabled');
   btn_convert.classList.remove('disabled');
+}
+
+function fileUploadStyling() {
+  let input = document.querySelectorAll("input[type=file]");
+  for (let i = 0; i < input.length; i++) {
+    var inputFile = input[i];
+    inputFile.addEventListener('change', function (e) {
+      var label = this.nextElementSibling;
+      label.innerHTML = this.files[0].name + ' ausgewählt ...';
+    });
+  }
 }
 
 function removeExtension(filename) {

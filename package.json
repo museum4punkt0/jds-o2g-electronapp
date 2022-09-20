@@ -1,5 +1,5 @@
 {
-  "name": "electron-jds-obj2gltf",
+  "name": "O2G-OBJ2GLTF",
   "version": "0.0.1",
   "description": "Converter obj2gltf for 3D models including draco compression",
   "main": "main.js",
