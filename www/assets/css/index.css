@@ -131,8 +131,8 @@ details {
 
 #dropzone {
   border: 4px dashed #283583;
-  width: 100%;
-  max-width: 300px;
+  width: calc(100% - 40px);
+  max-width: 700px;
   padding: 20px;
   text-align: center;
   margin-bottom: 1rem;
@@ -152,7 +152,7 @@ details {
   background-color: rgba(90, 113, 255, 1);
   z-index: 9999;
   color: #fff;
-  height: 150px;
+  /*height: 150px;*/
 }
 
 .viewers {
@@ -167,6 +167,10 @@ details {
   height: 40vh;
   position: relative;
   width: 100%;
+}
+
+.model-viewer.active{
+  border: 1px solid red;
 }
 
 .reset {
@@ -229,4 +233,11 @@ input[type="file"]{
   width: 0.1px;
   height: 0.1px;
   user-select: none;
+}
+
+#edit_controls{
+  display: none;
+}
+#edit_controls.active{
+  display: block;
 }
