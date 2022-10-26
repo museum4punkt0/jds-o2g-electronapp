@@ -14,7 +14,6 @@ const IMG_SAVED = 'img-saved';
 const MSG = 'new-msg'
 
 const SHADOW_INTENSITY = 1;
-const EXPOSURE = 9;
 const ENV_IMG = 'neutral'; // neutral or legacy
 
 
@@ -220,7 +219,7 @@ function createPreviewer(path, name, filesize) {
   bods.classList.add('reset');
   previewerDiv.innerHTML = '<div class="info"><h2>' + name + '</h2>' +
     '<p>' + filesize + '</p></div>' +
-    '<model-viewer id="' + model_id + '" class="model-viewer" poster="" src="' + path + '" loading="eager" reveal="auto" camera-controls touch-action="pan-y" auto-rotate environment-image="' + ENV_IMG + '" exposure="' + EXPOSURE + '" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
+    '<model-viewer id="' + model_id + '" class="model-viewer" poster="" src="' + path + '" loading="eager" reveal="auto" camera-controls touch-action="pan-y" auto-rotate environment-image="' + ENV_IMG + '" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
 
   let modelViewer = document.getElementById(model_id);
   modelViewer.addEventListener('load', function () {
@@ -230,7 +229,7 @@ function createPreviewer(path, name, filesize) {
 
 
 
-function createViewer(event, args) {
+function createViewer(event, args) { 
   let _type = args['type'] ?? '';
   btn_reset.classList.remove('hidden');
 
@@ -246,7 +245,7 @@ function createViewer(event, args) {
       '<p>' + args['filesize'] + '</p>' +
       '<button id="btnExport_' + model_id + '" onclick="exportGLB(this)">neu Exportieren</button>' +
       '<button id="btnEdit_' + model_id + '" onclick="editObject(this)">Editieren</button></div>' +
-      '<model-viewer id="' + model_id + '" class="model-viewer" src="' + args['path'] + '" id="reveal" loading="eager" reveal="auto" camera-controls touch-action="pan-y" auto-rotate shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
+      '<model-viewer id="' + model_id + '" class="model-viewer" src="' + args['path'] + '" id="reveal" loading="eager" reveal="auto" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
 
     if (args['type'] == DRACO_SAVED) {
       obj_counter++;
@@ -265,7 +264,7 @@ function createViewer(event, args) {
   }
   else {
     // exporter of png
-    document.getElementById('viewers').innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer snapshot" poster="" src="' + regularGltfPath + '" id="reveal" reveal="auto" loading="eager" touch-action="pan-y" exposure="' + EXPOSURE + '" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
+    document.getElementById('viewers').innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer snapshot" poster="" src="' + regularGltfPath + '" id="reveal" reveal="auto" loading="eager" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
     let modelViewer = document.getElementById('hidden_' + model_id);
 
     modelViewer.addEventListener('load', function () {
@@ -331,12 +330,12 @@ function quit() {
 
 
 async function exportGLB(target) {
-  console.log(target);
   let elID = target.id.split('_')[1];
-  console.log(elID);
   const modelViewer = document.getElementById(elID);
+  let originalName = extractFilename(modelViewer.getAttribute('src'));
+  let exposure = modelViewer.exposure;
   const glTF = await modelViewer.exportScene();
-  const file = new File([glTF], "export-" + Date.now() + Math.random() + ".gltf");
+  const file = new File([glTF], originalName + "_%_exposure=" +exposure+ ".gltf");
   const link = document.createElement("a");
   link.download = file.name;
   link.href = URL.createObjectURL(file);
@@ -365,6 +364,22 @@ function editObject(target) {
   modelViewerTransform = document.getElementById(elID);
   modelViewerTransform.classList.add('active');
 }
+
+function extractFilename(path) {
+  const pathArray = path.split("/");
+  const lastIndexSlash = pathArray.length - 1;
+
+  const fullname = pathArray[lastIndexSlash];
+  console.log(fullname);
+
+  const nameArray = fullname.split('.');
+  console.log(nameArray);
+  const lastIndexDot = nameArray.length - 1;
+
+  console.log(fullname.split('.').slice(0, -1).join('.'));
+
+  return fullname.split('.').slice(0, -1).join('.');
+};
 
 
 
