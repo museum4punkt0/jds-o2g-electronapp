@@ -13,8 +13,8 @@
 
 <body>
   <div class="wrapper">
-
-    <div id="viewers" class="viewers"></div>
+    <div id="img-generator-area"></div>
+    <div id="viewers" class="viewers"> </div>
     <div id="previewers" class="viewers hidden"></div>
 
     <div class="tools convert">
@@ -24,15 +24,17 @@
         <input type="file" id="objfile" name="objfile" data-target="load" accept=".obj">
         <label class="btn" for="objfile">OBJ Datei auswählen</label>
       </form>
-      <button id="convert" class="btn">OBJ zu GLTF</button>
+      <button id="convert" class="btn">OBJ laden</button>
       <button id="reset" class="btn hidden">Reset</button>
       <div id="edit_controls">
-        <input type="range" id="roll" name="roll" value="0" min="-180" max="180"> <label for="roll">rotationX</label>
-        <input type="range" id="pitch" name="pitch" value="0" min="-180" max="180"> <label for="pitch">rotationY</label>
-        <input type="range" id="yaw" name="yaw" value="0" min="-180" max="180"> <label for="yaw">rotationZ</label>
-        <input type="range" id="shadow" name="shadow" value="1" min="0" step="0.01" max="1"> <label for="shadow">Schatten</label>
-        <input type="range" id="exposure" name="exposure" value="1" min="1" step="0.05" max="10"> <label for="exposure">Belichtung</label>
-        <button id="frame">Update Framing</button>
+        <input type="range" id="roll" name="roll" value="0" min="-180" max="180"> <label for="roll">Rotation X</label>
+        <input type="range" id="pitch" name="pitch" value="0" min="-180" max="180"> <label for="pitch">Rotation
+          Y</label>
+        <input type="range" id="yaw" name="yaw" value="0" min="-180" max="180"> <label for="yaw">Rotation Z</label>
+        <!-- <input type="range" id="shadow" name="shadow" value="1" min="0" step="0.01" max="1"> <label for="shadow">Schatten</label> -->
+        <input type="range" id="exposure" name="exposure" value="1" min="1" step="0.05" max="10"> <label
+          for="exposure">Belichtung</label>
+        <!-- <button id="frame">Update Framing</button> -->
       </div>
     </div>
 
@@ -53,7 +55,10 @@
       </div>
     </nav>
 
-    <p id="feedback"></p>
+    <div id="overlay">
+      <p id="feedback"></p>
+    </div>
+
     <script type="module" src="./assets/js/model-viewer.min.js"></script>
     <script src="./assets/js/app.js"></script>
   </div>

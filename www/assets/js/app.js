@@ -4,6 +4,7 @@ const NO_FILES_SELECTED = "Keine Datei vorhanden!";
 
 /* Events */
 const SAVE_GLTF = "save-gltf";
+const SAVE_GLTF_COMP = "save-gltf-compressed";
 const SAVE_DRACO = "save-draco";
 const SAVE_IMG = "save-img";
 
@@ -13,16 +14,16 @@ const IMG_SAVED = 'img-saved';
 
 const MSG = 'new-msg'
 
-const SHADOW_INTENSITY = 1;
+const SHADOW_INTENSITY = 0.1;
 const ENV_IMG = 'neutral'; // neutral or legacy
 
 
 const roll = document.querySelector('#roll');
 const pitch = document.querySelector('#pitch');
 const yaw = document.querySelector('#yaw');
-const shadow = document.querySelector('#shadow');
+/* const shadow = document.querySelector('#shadow'); */
 const exposure = document.querySelector('#exposure');
-const frame = document.querySelector('#frame');
+//const frame = document.querySelector('#frame');
 const edit_controls = document.querySelector('#edit_controls');
 
 let timeoutfeedback;
@@ -37,8 +38,12 @@ var viewersArea;
 var previewersArea;
 var dropzone;
 let regularGltfPath;
+let screenshotExposure;
 let filename;
 let obj_counter = 1;
+
+let currentModelViewer;
+let updateFrameTimer;
 
 function initialize() {
   fileUploadStyling();
@@ -104,26 +109,6 @@ function initialize() {
   });
 
 
-  shadow.addEventListener('input', () => {
-    updateShadow();
-  });
-  exposure.addEventListener('input', () => {
-    updateExposure();
-  });
-
-  roll.addEventListener('input', () => {
-    updateOrientation();
-  });
-  pitch.addEventListener('input', () => {
-    updateOrientation();
-  });
-  yaw.addEventListener('input', () => {
-    updateOrientation();
-  });
-
-  frame.addEventListener('click', () => {
-    modelViewerTransform.updateFraming();
-  });
 
 
   ipcRenderer.on(MSG, (event, arg) => {
@@ -212,6 +197,11 @@ function createPreviewer(path, name, filesize) {
   filesize = filesize.toFixed(2) + "MB";
   let model_id = Date.now() + Math.random() * 100;
   let previewerDiv = document.createElement("div");
+  let exposure = removeExtension(name);
+  exposure = exposure.split("_%_exposure=").pop();
+  /* let exposure = name.split(".")[0];
+  exposure = exposure.split("_%_exposure=").pop();
+  exposure = exposure.replace(',','.'); */
   previewerDiv.classList.add('model');
   document.getElementById('previewers').prepend(previewerDiv);
 
@@ -219,7 +209,7 @@ function createPreviewer(path, name, filesize) {
   bods.classList.add('reset');
   previewerDiv.innerHTML = '<div class="info"><h2>' + name + '</h2>' +
     '<p>' + filesize + '</p></div>' +
-    '<model-viewer id="' + model_id + '" class="model-viewer" poster="" src="' + path + '" loading="eager" reveal="auto" camera-controls touch-action="pan-y" auto-rotate environment-image="' + ENV_IMG + '" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
+    '<model-viewer id="' + model_id + '" class="model-viewer" poster="" src="' + path + '" loading="eager" reveal="auto" camera-controls touch-action="pan-y" auto-rotate environment-image="' + ENV_IMG + '" exposure="' + exposure + '" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
 
   let modelViewer = document.getElementById(model_id);
   modelViewer.addEventListener('load', function () {
@@ -229,13 +219,13 @@ function createPreviewer(path, name, filesize) {
 
 
 
-function createViewer(event, args) { 
+function createViewer(event, args) {
   let _type = args['type'] ?? '';
   btn_reset.classList.remove('hidden');
 
   let model_id = Date.now() * 10000 + Math.random();
 
-  if (_type == GLTF_SAVED || _type == DRACO_SAVED) {
+  if (_type == GLTF_SAVED /* || _type == DRACO_SAVED */) {
 
     let viewerDiv = document.createElement("div");
     viewerDiv.classList.add('model');
@@ -243,44 +233,83 @@ function createViewer(event, args) {
 
     viewerDiv.innerHTML = '<div class="info"><p class="num">' + obj_counter + '</p><h2>' + args['label'] + '</h2><p>' + args['name'] + '</p>' +
       '<p>' + args['filesize'] + '</p>' +
-      '<button id="btnExport_' + model_id + '" onclick="exportGLB(this)">neu Exportieren</button>' +
-      '<button id="btnEdit_' + model_id + '" onclick="editObject(this)">Editieren</button></div>' +
+      '<button class="btn" id="btnExport_' + model_id + '" onclick="exportGLB(this)">Dateien generieren</button>' +
+      '<button class="btn" id="btnEdit_' + model_id + '" onclick="editObject(this)">Editieren</button></div>' +
       '<model-viewer id="' + model_id + '" class="model-viewer" src="' + args['path'] + '" id="reveal" loading="eager" reveal="auto" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
 
-    if (args['type'] == DRACO_SAVED) {
-      obj_counter++;
-      viewerDiv.classList.add('closer');
+    /* if (_type == DRACO_SAVED) {
+       obj_counter++;
+        viewerDiv.classList.add('closer');
+ 
+       regularGltfPath = args['oriPath'];
+ 
+       screenshotExposure = removeExtension(args['name']);
+       screenshotExposure = screenshotExposure.split("_%_exposure=").pop();
+ 
+       setTimeout(() => {
+         let Data = {
+           type: '',
+         };
+         createViewer(null, '');
+       }, 500);
+     }
+     else { */
+    var input = document.getElementById('objfile');
+    var label = input.nextElementSibling;
+    label.innerHTML = 'OBJ Datei auswählen';
+    btn_reset.classList.remove('disabled');
+    btn_convert.classList.remove('disabled');
+    obj_counter++;
+    //regularGltfPath = args['path'];
+    //}
+  }
+  else if (_type == DRACO_SAVED) {    
+    regularGltfPath = args['oriPath'];
+    screenshotExposure = removeExtension(args['regularFileName']);
+    screenshotExposure = screenshotExposure.split("_%_exposure=").pop();
 
-      setTimeout(() => {
-        let Data = {
-          type: '',
-        };
-        createViewer(null, '');
-      }, 100);
-    }
-    else {
-      regularGltfPath = args['path'];
-    }
+    setTimeout(() => {
+      let Data = {
+        type: '',
+      };
+      createViewer(null, '');
+    }, 500);
   }
   else {
     // exporter of png
-    document.getElementById('viewers').innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer snapshot" poster="" src="' + regularGltfPath + '" id="reveal" reveal="auto" loading="eager" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
-    let modelViewer = document.getElementById('hidden_' + model_id);
+    document.getElementById('img-generator-area').innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer snapshot" src="' + regularGltfPath + '" exposure="' + screenshotExposure + '" id="reveal" reveal="auto" loading="eager" shadow-intensity="0" alt="loaded model"></model-viewer>';
 
-    modelViewer.addEventListener('load', function () {
+    /* setTimeout(() => {
+      let modelViewer = document.querySelector('.snapshot');
+      console.log(modelViewer);
       console.log("hidden loaded");
       let data = modelViewer.toBlob({
         idealAspect: true
       }).then(function (imgdata) {
         setTimeout(() => {
-          saveBlob(imgdata, filename, model_id);
-        }, 100);
+          saveImageBlob(imgdata, filename, model_id);
+        }, 2000);
       });
+    }, 2000); */
+
+    let modelViewer = document.getElementById('hidden_' + model_id);
+    modelViewer.addEventListener('load', function () {
+
+      setTimeout(() => {
+        let data = modelViewer.toBlob({
+          idealAspect: true
+        }).then(function (imgdata) {
+          setTimeout(() => {
+            saveImageBlob(imgdata, filename, model_id);
+          }, 300);
+        });
+      }, 300);
+
     });
   }
 }
 
-function saveBlob(blob, fileName, model_id) {
+function saveImageBlob(blob, fileName, model_id) {
   let reader = new FileReader();
   reader.onload = function () {
     if (reader.readyState == 2) {
@@ -290,11 +319,26 @@ function saveBlob(blob, fileName, model_id) {
   }
   reader.readAsArrayBuffer(blob);
 
-  var element = document.getElementById('hidden_' + model_id);
-  element.parentNode.removeChild(element);
 
   btn_reset.classList.remove('disabled');
   btn_convert.classList.remove('disabled');
+
+  var element = document.getElementById('hidden_' + model_id);
+  element.parentNode.removeChild(element);
+}
+
+function saveGLTFBlob(blob, oriName, exposureValue) {
+  let reader = new FileReader();
+  reader.onload = function () {
+    if (reader.readyState == 2) {
+      var buffer = Buffer.from(reader.result);
+      ipcRenderer.send(SAVE_GLTF_COMP, oriName, exposureValue, buffer);
+    }
+  }
+  reader.readAsArrayBuffer(blob);
+  /* let buffer = Buffer.from(JSON.stringify(blob)); */
+
+  //ipcRenderer.send(SAVE_GLTF_COMP, oriName, exposureValue, buffer);
 }
 
 function fileUploadStyling() {
@@ -316,68 +360,106 @@ function setFeedback(message) {
   clearTimeout(timeoutfeedback);
   timeoutfeedback = setTimeout(resetFeedback, 2000);
   document.getElementById('feedback').innerHTML = message;
-  document.getElementById('feedback').classList.add('show');
+  document.getElementById('overlay').classList.add('show');
 }
 function resetFeedback() {
-  document.getElementById('feedback').classList.remove('show');
-}
-
-function quit() {
-  app.quit();
+  document.getElementById('overlay').classList.remove('show');
 }
 
 
+/****
+ * 
+ * MODEL VIEWER FUNCTIONS
+ * 
+ */
 
 
 async function exportGLB(target) {
   let elID = target.id.split('_')[1];
   const modelViewer = document.getElementById(elID);
   let originalName = extractFilename(modelViewer.getAttribute('src'));
-  let exposure = modelViewer.exposure;
-  const glTF = await modelViewer.exportScene();
-  const file = new File([glTF], originalName + "_%_exposure=" +exposure+ ".gltf");
+  let exposure = String(modelViewer.exposure);
+  const glTF = await modelViewer.exportScene(); // Blob of type "application/octet-stream" or "application/json"
+
+  console.log('clicked');
+  saveGLTFBlob(glTF, originalName, exposure);
+
+  /* const file = new File([glTF], originalName + "_%_exposure=" + exposure + ".gltf");
   const link = document.createElement("a");
   link.download = file.name;
   link.href = URL.createObjectURL(file);
-  link.click();
+  link.click(); */
 }
-let modelViewerTransform;
+
+/*  shadow.addEventListener('input', () => {
+   updateShadow();
+ }); */
+exposure.addEventListener('input', () => {
+  updateExposure();
+});
+
+roll.addEventListener('input', () => {
+  updateOrientation();
+});
+pitch.addEventListener('input', () => {
+  updateOrientation();
+});
+yaw.addEventListener('input', () => {
+  updateOrientation();
+});
+
+/* frame.addEventListener('click', () => {
+  currentModelViewer.updateFraming();
+}); */
+
+
+
 const updateOrientation = () => {
-  modelViewerTransform.orientation = `${roll.value}deg ${pitch.value}deg ${yaw.value}deg`;
+  currentModelViewer.orientation = `${roll.value}deg ${pitch.value}deg ${yaw.value}deg`;
+
+  clearTimeout(updateFrameTimer);
+  updateFrameTimer = setTimeout(() => {
+    currentModelViewer.updateFraming();
+  }, 500);
+
 };
 
 const updateExposure = () => {
-  modelViewerTransform.exposure = parseFloat(exposure.value);
+  currentModelViewer.exposure = parseFloat(exposure.value);
 };
-const updateShadow = () => {
-  modelViewerTransform.shadowIntensity = `${shadow.value}`;
+/* const updateShadow = () => {
+  currentModelViewer.shadowIntensity = `${shadow.value}`;
 };
-
+ */
 function editObject(target) {
+  const parent = target.parentNode;
+  const controls = document.getElementById('edit_controls');
+  parent.appendChild(controls);
+
   let elID = target.id.split('_')[1];
 
   edit_controls.classList.add('active');
 
-  if (modelViewerTransform)
-    modelViewerTransform.classList.remove('active');
+  if (currentModelViewer)
+    currentModelViewer.classList.remove('active');
 
-  modelViewerTransform = document.getElementById(elID);
-  modelViewerTransform.classList.add('active');
+  currentModelViewer = document.getElementById(elID);
+  currentModelViewer.classList.add('active');
+
+  let orientation = currentModelViewer.orientation;
+  orientation = orientation.split(' ');
+  roll.value = orientation[0].replace('deg', '');
+  pitch.value = orientation[1].replace('deg', '');
+  yaw.value = orientation[2].replace('deg', '');
+  exposure.value = currentModelViewer.exposure;
 }
 
 function extractFilename(path) {
   const pathArray = path.split("/");
   const lastIndexSlash = pathArray.length - 1;
-
   const fullname = pathArray[lastIndexSlash];
-  console.log(fullname);
-
   const nameArray = fullname.split('.');
-  console.log(nameArray);
   const lastIndexDot = nameArray.length - 1;
-
-  console.log(fullname.split('.').slice(0, -1).join('.'));
-
   return fullname.split('.').slice(0, -1).join('.');
 };
 
