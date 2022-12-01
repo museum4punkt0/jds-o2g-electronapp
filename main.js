@@ -1,7 +1,9 @@
-const { app, ipcMain, BrowserWindow } = require('electron')
-const path = require('path')
-const savepath = require('path').join(require('os').homedir(), 'Desktop')
+const { app, ipcMain, BrowserWindow } = require('electron');
+const path = require('path');
+const savepath = require('path').join(require('os').homedir(), 'Desktop');
 require('electron-reload')(__dirname);
+
+const utc = new Date().toJSON().slice(0, 10).replace(/-/g, '');
 
 /* 3d compression */
 const gltfPipeline = require("gltf-pipeline");
@@ -43,6 +45,8 @@ function createWindow() {
         }
     });
 
+    console.log(utc);
+
     win.loadFile('www/index.html');
 }
 
@@ -56,7 +60,7 @@ function convertToGltf(args, page) {
 
         let Data = {
             type: GLTF_SAVED,
-            label: "Regular GLTF",
+            label: "Temp GLTF",
             name: filenamegltf,
             filesize: datasize,
             path: path
@@ -73,7 +77,7 @@ function convertToGltf(args, page) {
 }
 
 function compressWithDraco(oriName, exposureValue, page) {
-    let oriPath = savepath + "/" + oriName + "/" + oriName + "-regular_%_exposure="+exposureValue+".glb";
+    let oriPath = savepath + "/" + utc + '-' + oriName + "/" + oriName + "-standard_%_exposure=" + exposureValue + ".glb";
 
     const options = {
         dracoOptions: {
@@ -81,26 +85,26 @@ function compressWithDraco(oriName, exposureValue, page) {
         },
     };
 
-    
+
 
     // because application/octet-stream and not /json
-    const glbToGltf = gltfPipeline.glbToGltf;    
-    const gltf = fsExtra.readFileSync(oriPath); 
-    
+    const glbToGltf = gltfPipeline.glbToGltf;
+    const gltf = fsExtra.readFileSync(oriPath);
+
     //const processGltf = gltfPipeline.processGltf;
     //const gltf = fsExtra.readJsonSync(oriPath);
 
     //processGltf(gltf, options).then(function (results) {
     glbToGltf(gltf, options).then(function (results) {
         const datasize = getDatasize(JSON.stringify(results.gltf));
-        let path = savepath + "/" + oriName + "/" + oriName + "-draco_compressed_%_exposure="+exposureValue+".gltf";
+        let path = savepath + "/" + utc + '-' + oriName + "/" + oriName + "-komprimiert_%_exposure=" + exposureValue + ".gltf";
         fsExtra.writeJsonSync(path, results.gltf);
 
         let Data = {
             type: DRACO_SAVED,
             label: "Draco compressed GLTF",
             name: oriName,
-            regularFileName: oriName + "-regular_%_exposure="+exposureValue+".glb",
+            regularFileName: oriName + "-standard_%_exposure=" + exposureValue + ".glb",
             filesize: datasize,
             path: path,
             oriPath: oriPath
@@ -138,7 +142,7 @@ ipcMain.on(SAVE_GLTF, (event, arg) => {
 });
 
 ipcMain.on(SAVE_IMG, (event, name, buffer) => {
-    fsExtra.outputFile(savepath + "/" + name + '/' + name + '-preview.png', buffer, err => {
+    fsExtra.outputFile(savepath + "/" + utc + '-' + name + '/' + name + '-preview.png', buffer, err => {
         if (err) {
             event.sender.send('ERROR_FILE', err.message)
         } else {
@@ -152,7 +156,10 @@ ipcMain.on(SAVE_GLTF_COMP, (event, oriName, exposureValue, buffer) => {
         oriName
     );
     //compressWithDraco(arg, event.sender);
-    fsExtra.outputFile(savepath + "/" + oriName + '/' + oriName + "-regular_%_exposure="+exposureValue+".glb", buffer, err => {
+    let dir = savepath + "/" + utc + '-' + oriName;
+    fs.rmSync(dir, { recursive: true, force: true });
+
+    fsExtra.outputFile(dir + '/' + oriName + "-standard_%_exposure=" + exposureValue + ".glb", buffer, err => {
         if (err) {
             event.sender.send('ERROR_FILE', err.message)
         } else {

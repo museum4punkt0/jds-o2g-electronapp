@@ -22,10 +22,11 @@
       <h3>Konvertieren</h3>
       <form id="form-obj">
         <input type="file" id="objfile" name="objfile" data-target="load" accept=".obj">
-        <label class="btn" for="objfile">OBJ Datei auswählen</label>
+        <label class="btn" for="objfile">OBJ Datei auswählen</label>        
       </form>
-      <button id="convert" class="btn">OBJ laden</button>
-      <button id="reset" class="btn hidden">Reset</button>
+      <button id="reset" class="btn disabled">Reset</button>
+      <!-- <button id="convert" class="btn">OBJ laden</button> -->
+      
       <div id="edit_controls">
         <input type="range" id="roll" name="roll" value="0" min="-180" max="180"> <label for="roll">Rotation X</label>
         <input type="range" id="pitch" name="pitch" value="0" min="-180" max="180"> <label for="pitch">Rotation
@@ -43,7 +44,7 @@
       <h3>Anschauen</h3>
       <div id="dropzone" ondrop="dropHandler(event);" ondragleave="dragOutHandler(event);"
         ondragover="dragOverHandler(event);">Dateien hier droppen</div>
-      <button id="resetprevs" class="btn hidden">Reset</button>
+      <button id="resetprevs" class="btn disabled">Reset</button>
     </div>
 
     <nav>

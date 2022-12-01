@@ -1,7 +1,7 @@
 {
   "name": "O2G-OBJ2GLTF",
   "version": "0.0.1",
-  "description": "Converter obj2gltf for 3D models including draco compression",
+  "description": "Convert OBJ 3D models to GLTF and GLB, including draco compression and viewer",
   "main": "main.js",
   "author": "2av",
   "license": "MIT",

@@ -27,7 +27,7 @@ const exposure = document.querySelector('#exposure');
 const edit_controls = document.querySelector('#edit_controls');
 
 let timeoutfeedback;
-var btn_convert;
+//var btn_convert;
 var btn_reset;
 var btn_resetprevs;
 var btn_toConvert;
@@ -51,7 +51,6 @@ function initialize() {
   btn_toConvert = document.getElementById('toConvert');
   btn_toView = document.getElementById('toView');
 
-  btn_convert = document.getElementById('convert');
   btn_reset = document.getElementById('reset');
   btn_resetprevs = document.getElementById('resetprevs');
 
@@ -71,27 +70,8 @@ function initialize() {
     switchToView();
   });
 
-  btn_convert.addEventListener('click', () => {
-    let file_field = document.getElementById("objfile");
-
-    if (file_field.files.length == 0) {
-      setFeedback(NO_FILES_SELECTED);
-      return;
-    }
-
-    btn_convert.classList.add('disabled');
-    btn_reset.classList.add('disabled');
-    filename = removeExtension(file_field.files[0].name);
-
-    let Data = {
-      file: file_field.files[0].path,
-      filename: filename
-    };
-
-    ipcRenderer.send(SAVE_GLTF, Data);
-  });
-
   btn_reset.addEventListener('click', () => {
+    btn_reset.classList.add('disabled');
     document.getElementById('viewers').innerHTML = "";
 
     obj_counter = 1;
@@ -105,10 +85,8 @@ function initialize() {
 
   btn_resetprevs.addEventListener('click', () => {
     document.getElementById('previewers').innerHTML = "";
-    btn_resetprevs.classList.add('hidden');
+    btn_resetprevs.classList.add('disabled');
   });
-
-
 
 
   ipcRenderer.on(MSG, (event, arg) => {
@@ -122,8 +100,42 @@ function initialize() {
   });
 }
 
+function fileUploadStyling() {
+  let inputFile = document.getElementById("objfile");
+
+  if(inputFile){
+    inputFile.addEventListener('change', function (e) {
+      var label = this.nextElementSibling;
+
+      if(this.files[0]){
+        label.innerHTML = this.files[0].name + ' ausgewählt ...';
+        handleFileChange();
+      }
+      
+    });
+  }  
+}
+
+function handleFileChange() {
+  let file_field = document.getElementById("objfile");
+
+  if (file_field.files.length == 0) {
+    setFeedback(NO_FILES_SELECTED);
+    return;
+  }
+
+  btn_reset.classList.add('disabled');
+  filename = removeExtension(file_field.files[0].name);
+
+  let Data = {
+    file: file_field.files[0].path,
+    filename: filename
+  };
+
+  ipcRenderer.send(SAVE_GLTF, Data);
+}
+
 function switchToConvert() {
-  console.log("to convert");
   btn_toView.classList.remove('hidden');
   btn_toConvert.classList.add('hidden');
 
@@ -135,7 +147,6 @@ function switchToConvert() {
 }
 
 function switchToView() {
-  console.log("to view");
   btn_toConvert.classList.remove('hidden');
   btn_toView.classList.add('hidden');
 
@@ -192,16 +203,13 @@ function dragOutHandler(ev) {
 }
 
 function createPreviewer(path, name, filesize) {
-  btn_resetprevs.classList.remove('hidden');
+  btn_resetprevs.classList.remove('disabled');
 
   filesize = filesize.toFixed(2) + "MB";
   let model_id = Date.now() + Math.random() * 100;
   let previewerDiv = document.createElement("div");
   let exposure = removeExtension(name);
   exposure = exposure.split("_%_exposure=").pop();
-  /* let exposure = name.split(".")[0];
-  exposure = exposure.split("_%_exposure=").pop();
-  exposure = exposure.replace(',','.'); */
   previewerDiv.classList.add('model');
   document.getElementById('previewers').prepend(previewerDiv);
 
@@ -221,11 +229,11 @@ function createPreviewer(path, name, filesize) {
 
 function createViewer(event, args) {
   let _type = args['type'] ?? '';
-  btn_reset.classList.remove('hidden');
+  btn_reset.classList.remove('disabled');
 
   let model_id = Date.now() * 10000 + Math.random();
 
-  if (_type == GLTF_SAVED /* || _type == DRACO_SAVED */) {
+  if (_type == GLTF_SAVED) {
 
     let viewerDiv = document.createElement("div");
     viewerDiv.classList.add('model');
@@ -237,33 +245,13 @@ function createViewer(event, args) {
       '<button class="btn" id="btnEdit_' + model_id + '" onclick="editObject(this)">Editieren</button></div>' +
       '<model-viewer id="' + model_id + '" class="model-viewer" src="' + args['path'] + '" id="reveal" loading="eager" reveal="auto" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
 
-    /* if (_type == DRACO_SAVED) {
-       obj_counter++;
-        viewerDiv.classList.add('closer');
- 
-       regularGltfPath = args['oriPath'];
- 
-       screenshotExposure = removeExtension(args['name']);
-       screenshotExposure = screenshotExposure.split("_%_exposure=").pop();
- 
-       setTimeout(() => {
-         let Data = {
-           type: '',
-         };
-         createViewer(null, '');
-       }, 500);
-     }
-     else { */
     var input = document.getElementById('objfile');
     var label = input.nextElementSibling;
     label.innerHTML = 'OBJ Datei auswählen';
     btn_reset.classList.remove('disabled');
-    btn_convert.classList.remove('disabled');
     obj_counter++;
-    //regularGltfPath = args['path'];
-    //}
   }
-  else if (_type == DRACO_SAVED) {    
+  else if (_type == DRACO_SAVED) {
     regularGltfPath = args['oriPath'];
     screenshotExposure = removeExtension(args['regularFileName']);
     screenshotExposure = screenshotExposure.split("_%_exposure=").pop();
@@ -278,19 +266,6 @@ function createViewer(event, args) {
   else {
     // exporter of png
     document.getElementById('img-generator-area').innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer snapshot" src="' + regularGltfPath + '" exposure="' + screenshotExposure + '" id="reveal" reveal="auto" loading="eager" shadow-intensity="0" alt="loaded model"></model-viewer>';
-
-    /* setTimeout(() => {
-      let modelViewer = document.querySelector('.snapshot');
-      console.log(modelViewer);
-      console.log("hidden loaded");
-      let data = modelViewer.toBlob({
-        idealAspect: true
-      }).then(function (imgdata) {
-        setTimeout(() => {
-          saveImageBlob(imgdata, filename, model_id);
-        }, 2000);
-      });
-    }, 2000); */
 
     let modelViewer = document.getElementById('hidden_' + model_id);
     modelViewer.addEventListener('load', function () {
@@ -319,9 +294,7 @@ function saveImageBlob(blob, fileName, model_id) {
   }
   reader.readAsArrayBuffer(blob);
 
-
   btn_reset.classList.remove('disabled');
-  btn_convert.classList.remove('disabled');
 
   var element = document.getElementById('hidden_' + model_id);
   element.parentNode.removeChild(element);
@@ -336,20 +309,6 @@ function saveGLTFBlob(blob, oriName, exposureValue) {
     }
   }
   reader.readAsArrayBuffer(blob);
-  /* let buffer = Buffer.from(JSON.stringify(blob)); */
-
-  //ipcRenderer.send(SAVE_GLTF_COMP, oriName, exposureValue, buffer);
-}
-
-function fileUploadStyling() {
-  let input = document.querySelectorAll("input[type=file]");
-  for (let i = 0; i < input.length; i++) {
-    var inputFile = input[i];
-    inputFile.addEventListener('change', function (e) {
-      var label = this.nextElementSibling;
-      label.innerHTML = this.files[0].name + ' ausgewählt ...';
-    });
-  }
 }
 
 function removeExtension(filename) {
@@ -373,28 +332,7 @@ function resetFeedback() {
  * 
  */
 
-
-async function exportGLB(target) {
-  let elID = target.id.split('_')[1];
-  const modelViewer = document.getElementById(elID);
-  let originalName = extractFilename(modelViewer.getAttribute('src'));
-  let exposure = String(modelViewer.exposure);
-  const glTF = await modelViewer.exportScene(); // Blob of type "application/octet-stream" or "application/json"
-
-  console.log('clicked');
-  saveGLTFBlob(glTF, originalName, exposure);
-
-  /* const file = new File([glTF], originalName + "_%_exposure=" + exposure + ".gltf");
-  const link = document.createElement("a");
-  link.download = file.name;
-  link.href = URL.createObjectURL(file);
-  link.click(); */
-}
-
-/*  shadow.addEventListener('input', () => {
-   updateShadow();
- }); */
-exposure.addEventListener('input', () => {
+ exposure.addEventListener('input', () => {
   updateExposure();
 });
 
@@ -408,30 +346,7 @@ yaw.addEventListener('input', () => {
   updateOrientation();
 });
 
-/* frame.addEventListener('click', () => {
-  currentModelViewer.updateFraming();
-}); */
-
-
-
-const updateOrientation = () => {
-  currentModelViewer.orientation = `${roll.value}deg ${pitch.value}deg ${yaw.value}deg`;
-
-  clearTimeout(updateFrameTimer);
-  updateFrameTimer = setTimeout(() => {
-    currentModelViewer.updateFraming();
-  }, 500);
-
-};
-
-const updateExposure = () => {
-  currentModelViewer.exposure = parseFloat(exposure.value);
-};
-/* const updateShadow = () => {
-  currentModelViewer.shadowIntensity = `${shadow.value}`;
-};
- */
-function editObject(target) {
+ function editObject(target) {
   const parent = target.parentNode;
   const controls = document.getElementById('edit_controls');
   parent.appendChild(controls);
@@ -454,6 +369,30 @@ function editObject(target) {
   exposure.value = currentModelViewer.exposure;
 }
 
+async function exportGLB(target) {
+  let elID = target.id.split('_')[1];
+  const modelViewer = document.getElementById(elID);
+  let originalName = extractFilename(modelViewer.getAttribute('src'));
+  let exposure = String(modelViewer.exposure);
+  const glTF = await modelViewer.exportScene(); // Blob of type "application/octet-stream" or "application/json"
+
+  saveGLTFBlob(glTF, originalName, exposure);
+}
+
+const updateOrientation = () => {
+  currentModelViewer.orientation = `${roll.value}deg ${pitch.value}deg ${yaw.value}deg`;
+
+  clearTimeout(updateFrameTimer);
+  updateFrameTimer = setTimeout(() => {
+    currentModelViewer.updateFraming();
+  }, 500);
+
+};
+
+const updateExposure = () => {
+  currentModelViewer.exposure = parseFloat(exposure.value);
+};
+
 function extractFilename(path) {
   const pathArray = path.split("/");
   const lastIndexSlash = pathArray.length - 1;
@@ -462,7 +401,5 @@ function extractFilename(path) {
   const lastIndexDot = nameArray.length - 1;
   return fullname.split('.').slice(0, -1).join('.');
 };
-
-
 
 window.onload = initialize;

@@ -50,6 +50,7 @@ button,
   font-family: 'WeissenhofGrotesk-Regular', 'Helvetica Neue', 'Arial';
   letter-spacing: 0.04rem;
   margin: 0 0.2rem 0.8rem;
+  user-select: none;
 }
 
 .btn:last-child{
@@ -167,6 +168,7 @@ details {
   background-color: rgba(90, 113, 255, 1);
   z-index: 9999;
   color: #fff;
+  min-height: 150px;
   /*height: 150px;*/
 }
 
