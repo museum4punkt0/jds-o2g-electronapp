@@ -4,7 +4,7 @@ const NO_FILES_SELECTED = "Keine Datei vorhanden!";
 
 /* Events */
 const SAVE_GLTF = "save-gltf";
-const SAVE_GLTF_COMP = "save-gltf-compressed";
+const SAVE_GLTF_REGULAR = "save-gltf-compressed";
 const SAVE_DRACO = "save-draco";
 const SAVE_IMG = "save-img";
 
@@ -103,17 +103,17 @@ function initialize() {
 function fileUploadStyling() {
   let inputFile = document.getElementById("objfile");
 
-  if(inputFile){
+  if (inputFile) {
     inputFile.addEventListener('change', function (e) {
       var label = this.nextElementSibling;
 
-      if(this.files[0]){
+      if (this.files[0]) {
         label.innerHTML = this.files[0].name + ' ausgewählt ...';
         handleFileChange();
       }
-      
+
     });
-  }  
+  }
 }
 
 function handleFileChange() {
@@ -125,7 +125,7 @@ function handleFileChange() {
   }
 
   btn_reset.classList.add('disabled');
-  filename = removeExtension(file_field.files[0].name);
+  filename = getTimeStamp() + '_' + removeExtension(file_field.files[0].name);
 
   let Data = {
     file: file_field.files[0].path,
@@ -134,6 +134,8 @@ function handleFileChange() {
 
   ipcRenderer.send(SAVE_GLTF, Data);
 }
+
+
 
 function switchToConvert() {
   btn_toView.classList.remove('hidden');
@@ -225,8 +227,6 @@ function createPreviewer(path, name, filesize) {
   });
 }
 
-
-
 function createViewer(event, args) {
   let _type = args['type'] ?? '';
   btn_reset.classList.remove('disabled');
@@ -305,7 +305,7 @@ function saveGLTFBlob(blob, oriName, exposureValue) {
   reader.onload = function () {
     if (reader.readyState == 2) {
       var buffer = Buffer.from(reader.result);
-      ipcRenderer.send(SAVE_GLTF_COMP, oriName, exposureValue, buffer);
+      ipcRenderer.send(SAVE_GLTF_REGULAR, oriName, exposureValue, buffer);
     }
   }
   reader.readAsArrayBuffer(blob);
@@ -332,7 +332,7 @@ function resetFeedback() {
  * 
  */
 
- exposure.addEventListener('input', () => {
+exposure.addEventListener('input', () => {
   updateExposure();
 });
 
@@ -346,7 +346,7 @@ yaw.addEventListener('input', () => {
   updateOrientation();
 });
 
- function editObject(target) {
+function editObject(target) {
   const parent = target.parentNode;
   const controls = document.getElementById('edit_controls');
   parent.appendChild(controls);
@@ -401,5 +401,24 @@ function extractFilename(path) {
   const lastIndexDot = nameArray.length - 1;
   return fullname.split('.').slice(0, -1).join('.');
 };
+
+
+/*
+*
+* HELPERS
+*
+*/
+
+function getTimeStamp() {
+  let timestamp = new Date();
+  return getTwoDigitNumbers(timestamp.getHours()) + getTwoDigitNumbers(timestamp.getMinutes()) + getTwoDigitNumbers(timestamp.getSeconds());
+}
+
+function getTwoDigitNumbers(num) {
+  if (num < 10)
+    return '0' + num;
+  else
+    return String(num);
+}
 
 window.onload = initialize;
