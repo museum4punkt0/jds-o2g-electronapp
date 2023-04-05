@@ -73,6 +73,9 @@ function initialize() {
 
   btn_reset.addEventListener('click', () => {
     btn_reset.classList.add('disabled');
+
+    document.querySelector('.tools.convert').appendChild(edit_controls);
+    edit_controls.classList.remove('active');
     document.getElementById('viewers').innerHTML = "";
 
     obj_counter = 1;
@@ -351,12 +354,10 @@ yaw.addEventListener('input', () => {
 
 function editObject(target) {
   const parent = target.parentNode;
-  const controls = document.getElementById('edit_controls');
-  parent.appendChild(controls);
+  parent.appendChild(edit_controls);
+  edit_controls.classList.add('active');
 
   let elID = target.id.split('_')[1];
-
-  edit_controls.classList.add('active');
 
   if (currentModelViewer)
     currentModelViewer.classList.remove('active');

@@ -155,7 +155,7 @@ ipcMain.on(SAVE_GLTF_COMP, (event, oriName, exposureValue, buffer) => {
     let dir = savepath + "/" + WORKING_FOLDER;
     //fs.rmSync(dir, { recursive: true, force: true });
 
-    fs.mkdirSync(dir + '/erledigt', { recursive: true });
+    fs.mkdirSync(dir + '/upload_erledigt', { recursive: true });
 
     fsExtra.outputFile(dir + '/' + oriName + SUFFIX_REGULAR + SUFFIX_EXPOSURE + exposureValue + ".glb", buffer, err => {
         if (err) {
