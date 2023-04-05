@@ -33,6 +33,7 @@ const MSG_IMG_SAVED = 'Vorschaubild fertig';
 const SUFFIX_REGULAR = '--NORM';
 const SUFFIX_COMPRESSED = '--COMP';
 const SUFFIX_IMG_PREVIEW = '--PREVIEW';
+const SUFFIX_EXPOSURE = '_&_exp='
 
 
 function createWindow() {
@@ -75,7 +76,7 @@ function convertToGltf(args, page) {
 }
 
 function compressWithDraco(oriName, exposureValue, page) {
-    let oriPath = savepath + "/" + WORKING_FOLDER + "/" + oriName + SUFFIX_REGULAR + "_&_exp=" + exposureValue + ".glb";
+    let oriPath = savepath + "/" + WORKING_FOLDER + "/" + oriName + SUFFIX_REGULAR + SUFFIX_EXPOSURE + exposureValue + ".glb";
 
     const options = {
         dracoOptions: {
@@ -88,14 +89,14 @@ function compressWithDraco(oriName, exposureValue, page) {
     const gltf = fsExtra.readFileSync(oriPath);
     glbToGltf(gltf, options).then(function (results) {
         const datasize = getDatasize(JSON.stringify(results.gltf));
-        let path = savepath + "/" + WORKING_FOLDER + "/" + oriName + SUFFIX_COMPRESSED + "_&_exp=" + exposureValue + ".gltf";
+        let path = savepath + "/" + WORKING_FOLDER + "/" + oriName + SUFFIX_COMPRESSED + SUFFIX_EXPOSURE + exposureValue + ".gltf";
         fsExtra.writeJsonSync(path, results.gltf);
 
         let Data = {
             type: DRACO_SAVED,
             label: "Draco compressed GLTF",
             name: oriName,
-            regularFileName: oriName + SUFFIX_REGULAR + "_&_exp=" + exposureValue + ".glb",
+            regularFileName: oriName + SUFFIX_REGULAR + SUFFIX_EXPOSURE + exposureValue + ".glb",
             filesize: datasize,
             path: path,
             oriPath: oriPath
@@ -134,8 +135,8 @@ ipcMain.on(SAVE_GLTF, (event, arg) => {
 });
 
 // save previewimage blob
-ipcMain.on(SAVE_IMG, (event, name, buffer) => {
-    fsExtra.outputFile(savepath + "/" + WORKING_FOLDER + '/' + name + SUFFIX_IMG_PREVIEW + '.png', buffer, err => {
+ipcMain.on(SAVE_IMG, (event, name, exposureValue, buffer) => {
+    fsExtra.outputFile(savepath + "/" + WORKING_FOLDER + '/' + name + SUFFIX_IMG_PREVIEW + SUFFIX_EXPOSURE + exposureValue + '.png', buffer, err => {
         if (err) {
             event.sender.send('ERROR_FILE', err.message)
         } else {
@@ -154,7 +155,9 @@ ipcMain.on(SAVE_GLTF_COMP, (event, oriName, exposureValue, buffer) => {
     let dir = savepath + "/" + WORKING_FOLDER;
     //fs.rmSync(dir, { recursive: true, force: true });
 
-    fsExtra.outputFile(dir + '/' + oriName + SUFFIX_REGULAR + "_&_exp=" + exposureValue + ".glb", buffer, err => {
+    fs.mkdirSync(dir + '/erledigt', { recursive: true });
+
+    fsExtra.outputFile(dir + '/' + oriName + SUFFIX_REGULAR + SUFFIX_EXPOSURE + exposureValue + ".glb", buffer, err => {
         if (err) {
             event.sender.send('ERROR_FILE', err.message);
         } else {

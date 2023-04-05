@@ -17,6 +17,7 @@ const MSG = 'new-msg'
 const SHADOW_INTENSITY = 0.1;
 const ENV_IMG = 'neutral'; // neutral or legacy
 
+const SUFFIX_EXPOSURE = '_&_exp='
 
 const roll = document.querySelector('#roll');
 const pitch = document.querySelector('#pitch');
@@ -211,7 +212,7 @@ function createPreviewer(path, name, filesize) {
   let model_id = Date.now() + Math.random() * 100;
   let previewerDiv = document.createElement("div");
   let exposure = removeExtension(name);
-  exposure = exposure.split("_%_exposure=").pop();
+  exposure = exposure.split(SUFFIX_EXPOSURE).pop();
   previewerDiv.classList.add('model');
   document.getElementById('previewers').prepend(previewerDiv);
 
@@ -254,13 +255,14 @@ function createViewer(event, args) {
   else if (_type == DRACO_SAVED) {
     regularGltfPath = args['oriPath'];
     screenshotExposure = removeExtension(args['regularFileName']);
-    screenshotExposure = screenshotExposure.split("_%_exposure=").pop();
+    screenshotExposure = screenshotExposure.split(SUFFIX_EXPOSURE).pop();
 
     setTimeout(() => {
-      let Data = {
+      let data = {
         type: '',
+        oriName: args['name'],
       };
-      createViewer(null, '');
+      createViewer(null, data);
     }, 500);
   }
   else {
@@ -275,7 +277,7 @@ function createViewer(event, args) {
           idealAspect: true
         }).then(function (imgdata) {
           setTimeout(() => {
-            saveImageBlob(imgdata, filename, model_id);
+            saveImageBlob(imgdata, args['oriName'], model_id);
           }, 300);
         });
       }, 300);
@@ -285,11 +287,12 @@ function createViewer(event, args) {
 }
 
 function saveImageBlob(blob, fileName, model_id) {
+  console.log(filename);
   let reader = new FileReader();
   reader.onload = function () {
     if (reader.readyState == 2) {
       var buffer = Buffer.from(reader.result);
-      ipcRenderer.send(SAVE_IMG, fileName, buffer);
+      ipcRenderer.send(SAVE_IMG, fileName, screenshotExposure, buffer);
     }
   }
   reader.readAsArrayBuffer(blob);
