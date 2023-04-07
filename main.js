@@ -99,7 +99,7 @@ function compressWithDraco(oriName, exposureValue, page) {
             regularFileName: oriName + SUFFIX_REGULAR + SUFFIX_EXPOSURE + exposureValue + ".glb",
             filesize: datasize,
             path: path,
-            oriPath: oriPath
+            oriPath: oriPath,
         };
 
         page.send(DRACO_SAVED, Data);

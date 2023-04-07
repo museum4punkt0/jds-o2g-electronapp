@@ -4,7 +4,7 @@ const NO_FILES_SELECTED = "Keine Datei vorhanden!";
 
 /* Events */
 const SAVE_GLTF = "save-gltf";
-const SAVE_GLTF_REGULAR = "save-gltf-compressed";
+const SAVE_GLTF_COMP = "save-gltf-compressed";
 const SAVE_DRACO = "save-draco";
 const SAVE_IMG = "save-img";
 
@@ -47,6 +47,7 @@ let currentModelViewer;
 let updateFrameTimer;
 
 function initialize() {
+
   fileUploadStyling();
 
   btn_toConvert = document.getElementById('toConvert');
@@ -223,7 +224,7 @@ function createPreviewer(path, name, filesize) {
   bods.classList.add('reset');
   previewerDiv.innerHTML = '<div class="info"><h2>' + name + '</h2>' +
     '<p>' + filesize + '</p></div>' +
-    '<model-viewer id="' + model_id + '" class="model-viewer" poster="" src="' + path + '" loading="eager" reveal="auto" camera-controls touch-action="pan-y" auto-rotate environment-image="' + ENV_IMG + '" exposure="' + exposure + '" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
+    '<model-viewer id="' + model_id + '" class="model-viewer" poster="" src="' + path + '?' + new Date() + '" loading="eager" reveal="auto" camera-controls touch-action="pan-y" auto-rotate environment-image="' + ENV_IMG + '" exposure="' + exposure + '" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
 
   let modelViewer = document.getElementById(model_id);
   modelViewer.addEventListener('load', function () {
@@ -247,7 +248,7 @@ function createViewer(event, args) {
       '<p>' + args['filesize'] + '</p>' +
       '<button class="btn" id="btnExport_' + model_id + '" onclick="exportGLB(this)">Dateien generieren</button>' +
       '<button class="btn" id="btnEdit_' + model_id + '" onclick="editObject(this)">Editieren</button></div>' +
-      '<model-viewer id="' + model_id + '" class="model-viewer" src="' + args['path'] + '" id="reveal" loading="eager" reveal="auto" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
+      '<model-viewer id="' + model_id + '" class="model-viewer" src="' + args['path'] + '?' + new Date() + '" id="reveal" loading="eager" reveal="auto" shadow-intensity="' + SHADOW_INTENSITY + '" alt="loaded model"></model-viewer>';
 
     var input = document.getElementById('objfile');
     var label = input.nextElementSibling;
@@ -270,11 +271,10 @@ function createViewer(event, args) {
   }
   else {
     // exporter of png
-    document.getElementById('img-generator-area').innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer snapshot" src="' + regularGltfPath + '" exposure="' + screenshotExposure + '" id="reveal" reveal="auto" loading="eager" shadow-intensity="0" alt="loaded model"></model-viewer>';
+    document.getElementById('img-generator-area').innerHTML += '<model-viewer id="hidden_' + model_id + '" class="model-viewer snapshot" src="' + regularGltfPath + '?' + new Date() + '" exposure="' + screenshotExposure + '" id="reveal" reveal="auto" loading="eager" shadow-intensity="0" alt="loaded model"></model-viewer>';
 
     let modelViewer = document.getElementById('hidden_' + model_id);
     modelViewer.addEventListener('load', function () {
-
       setTimeout(() => {
         let data = modelViewer.toBlob({
           idealAspect: true
@@ -311,7 +311,7 @@ function saveGLTFBlob(blob, oriName, exposureValue) {
   reader.onload = function () {
     if (reader.readyState == 2) {
       var buffer = Buffer.from(reader.result);
-      ipcRenderer.send(SAVE_GLTF_REGULAR, oriName, exposureValue, buffer);
+      ipcRenderer.send(SAVE_GLTF_COMP, oriName, exposureValue, buffer);
     }
   }
   reader.readAsArrayBuffer(blob);
@@ -375,11 +375,11 @@ function editObject(target) {
 
 async function exportGLB(target) {
   let elID = target.id.split('_')[1];
-  const modelViewer = document.getElementById(elID);
+  let modelViewer = document.getElementById(elID);
   let originalName = extractFilename(modelViewer.getAttribute('src'));
   let exposure = String(modelViewer.exposure);
-  const glTF = await modelViewer.exportScene(); // Blob of type "application/octet-stream" or "application/json"
 
+  const glTF = await modelViewer.exportScene(); // Blob of type "application/octet-stream" or "application/json"
   saveGLTFBlob(glTF, originalName, exposure);
 }
 
