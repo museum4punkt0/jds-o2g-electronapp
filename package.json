@@ -4,7 +4,7 @@
   "description": "Convert OBJ 3D models to GLTF and GLB, including draco compression and viewer",
   "main": "main.js",
   "author": "2av",
-  "license": "MIT",
+  "license": "GNU",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",

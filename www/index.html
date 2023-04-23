@@ -3,9 +3,6 @@
 
 <head>
   <meta charset="UTF-8">
-  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-  <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
   <title>O2G - OBJ2GLTF</title>
   <link rel="stylesheet" type="text/css" href="./assets/css/fonts.css">
   <link rel="stylesheet" type="text/css" href="./assets/css/index.css">
@@ -25,16 +22,13 @@
         <label class="btn" for="objfile">OBJ Datei auswählen</label>
       </form>
       <button id="reset" class="btn disabled">Reset</button>
-      <!-- <button id="convert" class="btn">OBJ laden</button> -->
 
       <div id="edit_controls">
         <input type="range" id="roll" name="roll" value="0" min="-180" max="180"> <label for="roll">RotationX</label>
         <input type="range" id="pitch" name="pitch" value="0" min="-180" max="180"> <label for="pitch">RotationY</label>
         <input type="range" id="yaw" name="yaw" value="0" min="-180" max="180"> <label for="yaw">RotationZ</label>
-        <!-- <input type="range" id="shadow" name="shadow" value="1" min="0" step="0.01" max="1"> <label for="shadow">Schatten</label> -->
         <input type="range" id="exposure" name="exposure" value="1" min="1" step="0.05" max="10"> <label
           for="exposure">Belichtung</label>
-        <!-- <button id="frame">Update Framing</button> -->
       </div>
     </div>
 

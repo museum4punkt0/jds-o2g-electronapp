@@ -3,6 +3,7 @@ const path = require('path');
 const savepath = require('path').join(require('os').homedir(), 'Desktop');
 require('electron-reload')(__dirname);
 
+// The working folder for today
 const WORKING_FOLDER = new Date().toJSON().slice(0, 10).replace(/-/g, '') + '-JDS';
 
 /* 3d compression */
@@ -16,11 +17,9 @@ const SAVE_GLTF = "save-gltf";
 const SAVE_GLTF_COMP = "save-gltf-compressed";
 const SAVE_DRACO = "save-draco";
 const SAVE_IMG = "save-img";
-
 const GLTF_SAVED = 'gltf-saved';
 const DRACO_SAVED = 'draco-saved';
 const IMG_SAVED = 'img-saved';
-
 const MSG = 'new-msg'
 
 /* MSGS */
@@ -35,7 +34,9 @@ const SUFFIX_COMPRESSED = '--COMP';
 const SUFFIX_IMG_PREVIEW = '--PREVIEW';
 const SUFFIX_EXPOSURE = '_&_exp='
 
-
+/**
+ * Creates the electron window
+ */
 function createWindow() {
     const win = new BrowserWindow({
         width: 1600,
@@ -43,17 +44,21 @@ function createWindow() {
         autoHideMenuBar: true,
         center: true,
         webPreferences: {
-            //preload: path.join(__dirname, 'preload.js')
             nodeIntegration: true,
             contextIsolation: false,
         }
     });
 
-    console.log(WORKING_FOLDER);
-
+    // loads our main html
     win.loadFile('www/index.html');
 }
 
+/**
+ * Converts the OBJ to a temp GLTF on the Desktop to be
+ * able to show and edit it in the app
+ * @param {array} args 
+ * @param {webContents} page 
+ */
 function convertToGltf(args, page) {
     obj2gltf(args['file']).then(function (gltf) {
         const data = Buffer.from(JSON.stringify(gltf));
@@ -70,11 +75,19 @@ function convertToGltf(args, page) {
             path: path,
         };
 
+        // sends out an event with data and a message to the app
         page.send(GLTF_SAVED, Data);
         page.send(MSG, MSG_GLTF_SAVED);
     });
 }
 
+/**
+ * Compresses the file that is read from the path (which is a GLB
+ * from model-viewer) and saves it
+ * @param {string} oriName 
+ * @param {string} exposureValue 
+ * @param {webContents} page 
+ */
 function compressWithDraco(oriName, exposureValue, page) {
     let oriPath = savepath + "/" + WORKING_FOLDER + "/" + oriName + SUFFIX_REGULAR + SUFFIX_EXPOSURE + exposureValue + ".glb";
 
@@ -102,16 +115,27 @@ function compressWithDraco(oriName, exposureValue, page) {
             oriPath: oriPath,
         };
 
+        // sends out an event with data and a message to the app
         page.send(DRACO_SAVED, Data);
         page.send(MSG, MSG_GLTF_DRACO_SAVED);
     });
 }
 
+/**
+ * Recursively creates folders and saves a file
+ * @param {string} filename 
+ * @param {string | Buffer} content 
+ */
 function writeFileSyncRecursive(filename, content = '') {
     fs.mkdirSync(path.dirname(filename), { recursive: true });
     fs.writeFileSync(filename, content);
 }
 
+/**
+ * 
+ * @param {Buffer} filestream 
+ * @returns number
+ */
 function getDatasize(filestream) {
     let datasize = Buffer.byteLength(filestream);
     datasize = datasize / 1000000;
@@ -122,8 +146,8 @@ function getDatasize(filestream) {
 
 /**
  * 
- *  THREAD EVENTS
- * 
+ * THREAD EVENTS
+ * When app returns data
  */
 
 // save temporary GTLF (convert selected OBJ to GLTF so it can be displayed)
@@ -151,11 +175,8 @@ ipcMain.on(SAVE_GLTF_COMP, (event, oriName, exposureValue, buffer) => {
         oriName
     );
 
-    // dont empty folder anymore
     let dir = savepath + "/" + WORKING_FOLDER;
-    //fs.rmSync(dir, { recursive: true, force: true });
-
-    fs.mkdirSync(dir + '/upload_erledigt', { recursive: true });
+    fs.mkdirSync(dir + '/upload_erledigt', { recursive: true }); // creates a subfolder upload_erledigt for the museum employees for better organizing files
 
     fsExtra.outputFile(dir + '/' + oriName + SUFFIX_REGULAR + SUFFIX_EXPOSURE + exposureValue + ".glb", buffer, err => {
         if (err) {
@@ -163,7 +184,7 @@ ipcMain.on(SAVE_GLTF_COMP, (event, oriName, exposureValue, buffer) => {
         } else {
             event.sender.send(MSG, MSG_GLTF_REGULAR_SAVED);
 
-            // save DRACO
+            // save DRACO after a short delay
             setTimeout(() => {
                 compressWithDraco(oriName, exposureValue, event.sender);
             }, 1000);
@@ -177,6 +198,7 @@ ipcMain.on(SAVE_GLTF_COMP, (event, oriName, exposureValue, buffer) => {
  * 
  */
 
+// when ready, init
 app.whenReady().then(() => {
     createWindow();
 })
