@@ -20,7 +20,10 @@ Das Deutsche Auswandererhaus ist ein kulturhistorisches Museum zum Thema Migrati
 
 ## 2. Finanzierung
 
-[Bitte Input von BB]
+Diese Anwendung ist entstanden im Verbundprojekt museum4punkt0 – Digitale Strategien für das Museum der Zukunft, Teilprojekt Deutsches Auswandererhaus – Migrationsgeschichte digital erleben. Das Projekt museum4punkt0 wird gefördert durch die Beauftragte der Bundesregierung für Kultur und Medien aufgrund eines Beschlusses des Deutschen Bundestages.
+
+Weitere Informationen: https://www.museum4punkt0.de
+
 
 ## 3. Voraussetzungen und Skills
 
@@ -132,26 +135,19 @@ Wenn Sie etwas beitragen möchten, forken Sie bitte das Repository und verwenden
 
 ## 8. Credits
 
-[----TODO----]
+Diese Anwendung ist entstanden im Verbundprojekt museum4punkt0 – Digitale Strategien für das Museum der Zukunft, Teilprojekt Deutsches Auswandererhaus - Migrationsgeschichte digital erleben. Weitere Informationen: https://www.museum4punkt0.de.
 
-### Team 2av
+Das Projekt museum4punkt0 wird gefördert durch die Beauftragte der Bundesregierung für Kultur und Medien aufgrund eines Beschlusses des Deutschen Bundestages.
 
-* Jens Döring (Projektkoordination)
-* Santiago Duque (Projektleitung and Entwicklung)
+Auftraggeber und inhaltliches Konzept: Deutsches Auswandererhaus Bremerhaven, Columbusstraße 65, 27568 Bremerhaven
 
-### Team Deutsches Auswandererhaus
+Design: Andreas Heller Architects and Designers, Hamburg
 
-* Birgit Burghart (Projektkoordination)
-* Jasper Stephan-Beneker (Museumswissenschaft)
-* Astrid Bormann (Museumspädagogik)
-* Marcel Leukel (Museumstechnik)
-
-### Team Studio Andreas Heller Architects & Designers
-
-* Dirk Kühne (Projektkoordination und Design)
+Auftragnehmer Programmierung: 2av GmbH, Keltergasse 3, 89073 Ulm, Ansprechpartner: Jens Döring (Projektkoordination), Santiago Duque (Projektleitung und Entwicklung)
 
 ## 9. Lizenz
 
-GNU GENERAL PUBLIC LICENSE <br>
-Copyright © 2022, 2av GmbH <br>
+GNU GENERAL PUBLIC LICENSE 
+Copyright © 2022/2023, Deutsches Auswandererhaus / Design: Andreas Heller Architects and Designers, Hamburg; Programmierung: 2av GmbH, Ulm 
 Please also see the LICENSE file provided within this repository
+
