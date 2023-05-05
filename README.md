@@ -16,7 +16,7 @@
 
 Das Deutsche Auswandererhaus ist ein kulturhistorisches Museum zum Thema Migration in Bremerhaven. Im Rahmen des deutschlandweiten Förderprojekts »museum4punkt0« sollen neue Formen der digitalen Kommunikation, Partizipation, Bildung und Vermittlung in Museen entwickelt, umgesetzt und evaluiert werden. Das Projektteam des DAHs erarbeitete unter dem Titel »Junge Digitale Sammlung« JDS ein museumspädagogisches Workshop-Angebot für Schulklassen. Der Workshop setzt sich inhaltlich mit den Themenkomplexen Identität und Diversität auseinander sowie mit der Bedeutung und Handhabung von Objekten im Museum. Teilnehmende Schüler:innen können dabei ihre Alltagsobjekte, die sowohl physisch als auch digital sein können, in 3D scannen oder fotografieren. Diese und weitere Daten zum Objekt werden in eine Datenbank eingegeben und später auf einer Plattform veröffentlicht. Durch die Workshops wird die JDS zu einer umfangreichen Sammlung anwachsen.
 
-> Electron-Anwendung für die Umwandlung von OBJ zu GLTF/GLB Modellen inkl. DRACO komprimierter Version und Vorschaubild. Diese Anwendung ist im Rahmen der JDS-Web-Platform entstanden. Die Dateien, die Sie damit generieren, können Sie auf die JDS-Platform hochladen (s. bitte JDS-Dokumentation).
+> Electron-Anwendung für die Umwandlung von OBJ zu GLTF/GLB Modellen inkl. DRACO komprimierter Version und Vorschaubild. Diese Anwendung ist im Rahmen der JDS-Web-Platform entstanden. Die Dateien, die Sie damit generieren, können Sie auf die JDS-Platform hochladen (s. bitte [JDS-Dokumentation](https://github.com/museum4punkt0/junge-digitale-sammlung)).
 
 ## 2. Finanzierung
 
